@@ -35,7 +35,8 @@ jobs:
         with:
           version: '6.8.3'
           arch: win64_mingw
-          modules: qtcharts qtsvg
+          # Qt SVG is included in the base desktop archives for this version.
+          modules: qtcharts
           tools: tools_mingw1310
           add-tools-to-path: true
           cache: true

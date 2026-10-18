@@ -1,5 +1,7 @@
 # SmartAI Industrial Monitor
 
+[![Windows build and acceptance](https://github.com/3086707459-ai/SmartAIIndustrialMonitor/actions/workflows/windows.yml/badge.svg)](https://github.com/3086707459-ai/SmartAIIndustrialMonitor/actions/workflows/windows.yml)
+
 面向 C++ / Qt 客户端与工业软件实习的设备监控项目。使用 C++17、Qt 6 Widgets / Charts、TCP 和 SQLite，实现模拟设备采集、实时曲线、设备告警、诊断与维护报告。
 
 项目定位是**可运行、可测试的工业监控原型**。默认数据来自内置模拟网关；诊断使用启发式模型与统计异常检测。仓库未提供已验证的 ONNX 权重、训练数据或准确率报告，不能据此宣称真实工业预测能力。
@@ -13,6 +15,8 @@
 先让 `cmake`、`ctest`、`ninja` 可在终端找到，再执行：
 
 ```powershell
+git clone https://github.com/3086707459-ai/SmartAIIndustrialMonitor.git
+Set-Location SmartAIIndustrialMonitor
 # 将两个路径替换为本机 Qt 与匹配的 MinGW 安装目录
 ./scripts/verify.ps1 -QtRoot E:/qt/6.8.3/mingw_64 -CompilerBin E:/qt/Tools/mingw1310_64/bin
 ```
