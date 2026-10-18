@@ -1,0 +1,55 @@
+# Build output
+build/
+build-*/
+out/
+cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.exe
+*.pdb
+
+# Qt generated
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.qm
+.qmake.stash
+Makefile
+*.pro.user*
+
+# IDE
+.vscode/
+.idea/
+*.user
+*.autosave
+
+# Runtime artefacts (generated at run time, never committed)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+logs/
+reports/*.pdf
+models/*.onnx
+!models/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Local credentials and machine-specific overrides
+.env
+.env.*
+!.env.example
+CMakeUserPresets.json
+*.pem
+*.key

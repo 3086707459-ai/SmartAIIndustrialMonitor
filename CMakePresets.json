@@ -1,0 +1,27 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "demo",
+      "displayName": "Portable demo and tests (Qt from CMAKE_PREFIX_PATH)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/demo",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "SAIM_BUILD_TESTS": "ON",
+        "SAIM_BUILD_SIMULATOR": "ON",
+        "SAIM_WITH_ONNX": "OFF",
+        "SAIM_WITH_OPENCV": "OFF",
+        "SAIM_WARNINGS_AS_ERRORS": "ON"
+      }
+    }
+  ],
+  "buildPresets": [{ "name": "demo", "configurePreset": "demo", "jobs": 4 }],
+  "testPresets": [{
+    "name": "demo",
+    "configurePreset": "demo",
+    "output": { "outputOnFailure": true },
+    "execution": { "noTestsAction": "error" }
+  }]
+}

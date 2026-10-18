@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/theme">
+        <file alias="industrial-dark.qss">theme/industrial-dark.qss</file>
+        <file alias="app.svg">icons/app.svg</file>
+        <file alias="device-motor.svg">icons/device-motor.svg</file>
+        <file alias="device-pump.svg">icons/device-pump.svg</file>
+        <file alias="device-spindle.svg">icons/device-spindle.svg</file>
+        <file alias="device-fan.svg">icons/device-fan.svg</file>
+        <file alias="alarm.svg">icons/alarm.svg</file>
+        <file alias="report.svg">icons/report.svg</file>
+    </qresource>
+</RCC>

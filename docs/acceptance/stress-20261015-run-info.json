@@ -1,0 +1,743 @@
+{
+  "durationSeconds": 1800,
+  "sourceHashes": [
+    {
+      "sha256": "8D80C8221404B4D38FA2E7F3EDE63D1D0301CA97A8CB0735349CFA58AB9E008B",
+      "path": "src\\ai\\AIInferenceEngine.cpp"
+    },
+    {
+      "sha256": "633A67AD2C7A463AFABAFED95F8C23ED384E80DE70FC9A67945B6936499BA109",
+      "path": "src\\ai\\AIInferenceEngine.h"
+    },
+    {
+      "sha256": "DB6AFE0ED712708539C3F4ECE06C0C8DC1E68AD4AD82DB7E7E8189269C738057",
+      "path": "src\\ai\\AIReportGenerator.cpp"
+    },
+    {
+      "sha256": "1AF9A314E3E794D5B1063FF0289E07559DE0CDFC7757AADA0A3EE8191799E92B",
+      "path": "src\\ai\\AIReportGenerator.h"
+    },
+    {
+      "sha256": "990B969DEE19612717A5434982D05C779348EE6DD4E3A49AD33173553257C35B",
+      "path": "src\\ai\\AnomalyDetector.cpp"
+    },
+    {
+      "sha256": "0ED37D7C875A977ACF4A70EEC762D4636F1A8E75F9D1846175D5285B67B01F79",
+      "path": "src\\ai\\AnomalyDetector.h"
+    },
+    {
+      "sha256": "BFA27AAF6BB8D383AFF65B7B3D5930FE42E5E2E7B8A69EDFC3F661FAD7D95F55",
+      "path": "src\\ai\\CMakeLists.txt"
+    },
+    {
+      "sha256": "813E353A8F0CFC61916DCFFFC6A636AC59E364E4921D31824D3AE663BAFFE6F8",
+      "path": "src\\ai\\FaultPredictor.cpp"
+    },
+    {
+      "sha256": "8E3602562CFCA13CE0E325F99AC4A1FAE89F7BB4943DF272AD76D331573383BE",
+      "path": "src\\ai\\FaultPredictor.h"
+    },
+    {
+      "sha256": "C4F63805939D3D75C95E60110B79FD0AD62705D4F7E59523828936C6EC031E4A",
+      "path": "src\\ai\\FeatureExtractor.cpp"
+    },
+    {
+      "sha256": "DF73116D3A7946B00D724F75B7FC913B1D4BF41DB9D01B16C99548BCB8929A5A",
+      "path": "src\\ai\\FeatureExtractor.h"
+    },
+    {
+      "sha256": "18D24632529FEA1760BB6E9BC2D782FAF7B1732C25AC70540B84B2AA318BB521",
+      "path": "src\\ai\\VisionDetector.cpp"
+    },
+    {
+      "sha256": "10903824B77185A60966EE61E706B5050ABFBF761854E6A3CD737435F509297B",
+      "path": "src\\ai\\VisionDetector.h"
+    },
+    {
+      "sha256": "09DAC0B2E1AFAE19C1E08DDE982573CACA46B1CC50E7F8FE8CFA8AD6F23756D9",
+      "path": "src\\app\\ApplicationController.cpp"
+    },
+    {
+      "sha256": "379F8AE58ABEA9F41C4067E6E4DBBA23B8039AE25162D4A1E11838A55033195C",
+      "path": "src\\app\\ApplicationController.h"
+    },
+    {
+      "sha256": "ED44BF9911989ADFAE788F58B3333EA467532B9E207B3850C8038501D8B5B901",
+      "path": "src\\app\\CMakeLists.txt"
+    },
+    {
+      "sha256": "A261A6DA5F17184BD72C51124E412B0B140762B9F17F9FEC6D02E917FC363CD6",
+      "path": "src\\common\\CMakeLists.txt"
+    },
+    {
+      "sha256": "FBADB463E277B56FA5D3961B19D1194B5F0A04A81C1A6F9461B4B2F04B73067D",
+      "path": "src\\common\\ErrorCode.h"
+    },
+    {
+      "sha256": "197105159CCECEB5A4E7B4023CD0C0CAE3589482FF7DC995C1DD0271177F2D5E",
+      "path": "src\\common\\Result.h"
+    },
+    {
+      "sha256": "B8A69E02A12A87FF12F7E4321F1D6D5934653740EB52136B4D135B1EBD5753D2",
+      "path": "src\\common\\RingBuffer.h"
+    },
+    {
+      "sha256": "3895B7B7B52BC4C1CD1DF2A09E63D144583D00CB9393EF1304C7F10D7BD1DE4B",
+      "path": "src\\common\\Types.cpp"
+    },
+    {
+      "sha256": "7A78AE2E201E68D62B1891E30CFD9540ACA3DB8D08C551E6E8A92AB83F7AB117",
+      "path": "src\\common\\Types.h"
+    },
+    {
+      "sha256": "474723B33B5B56272C5D4A978B52BB51B5CE15CDCC862CA9A24A646347929822",
+      "path": "src\\core\\CMakeLists.txt"
+    },
+    {
+      "sha256": "4CBAD1C16D90FE4A9A7EF9AD0ABB5B046CA4C5096686EAEEEFD7DF29E60B6231",
+      "path": "src\\core\\ConfigManager.cpp"
+    },
+    {
+      "sha256": "BC56E2CD096C96C39F6CD0C22024C330944372B20B509E36E9CD5F1ABECA0DB2",
+      "path": "src\\core\\ConfigManager.h"
+    },
+    {
+      "sha256": "31933CEB73BA7C2AC54847C735239E51E9CBA067D1902876DDE62C1E87474F67",
+      "path": "src\\core\\Logger.cpp"
+    },
+    {
+      "sha256": "D1E0BFF624912C1724898657FCF92C67E255901B44B808C8034F936ED73C68D0",
+      "path": "src\\core\\Logger.h"
+    },
+    {
+      "sha256": "2694A4C73A5796FEA4D52746542116C24C43AA7C1263A7611FCA8EEB2453B43C",
+      "path": "src\\database\\CMakeLists.txt"
+    },
+    {
+      "sha256": "55B0BFD855598305E1DC2D80C66EEC67263600948D74A7E3A1D493011B5B7923",
+      "path": "src\\database\\DatabaseManager.cpp"
+    },
+    {
+      "sha256": "FD338B26BA0C74F9E4529F70CC2E61BA24EDAD55347DFB67E5539D45A51DD207",
+      "path": "src\\database\\DatabaseManager.h"
+    },
+    {
+      "sha256": "3498F78B2BDE0F6FD4049333BCD2A2CE8484C73DF15C4551F17FB56A04A088B6",
+      "path": "src\\database\\DataRepository.cpp"
+    },
+    {
+      "sha256": "D0F229A5631CA26885ECEABCB35EB9E3867632FE176C69C1F20BD2A4C288ED6B",
+      "path": "src\\database\\DataRepository.h"
+    },
+    {
+      "sha256": "676B8071096A171036614A51B42860471365957F7046F33117BE8B7C6DF63ED0",
+      "path": "src\\device\\CMakeLists.txt"
+    },
+    {
+      "sha256": "21A8CCD3A197ACA91B293F7AC9409A37D8B0E737C8CBD9A451BFED9DBA81C530",
+      "path": "src\\device\\Device.cpp"
+    },
+    {
+      "sha256": "9A7602946004DF7AE4EEF13C53C3AAC60E1A20DB635E5447349323122A539E5A",
+      "path": "src\\device\\Device.h"
+    },
+    {
+      "sha256": "3047D1B19631D81655BE350B4346F5C96F4BD332B66DE2D116BE9CE6328D562F",
+      "path": "src\\device\\DeviceManager.cpp"
+    },
+    {
+      "sha256": "B2484D5FAF905946846AF3C9FC0F9BC9F2D67B7A4849566DBBF850F290AC700A",
+      "path": "src\\device\\DeviceManager.h"
+    },
+    {
+      "sha256": "03252A43E46BDE0FB4C864A06A8360E029DBE9DAF5DCBACDF7D005C1C3AF36DD",
+      "path": "src\\device\\DeviceProtocol.cpp"
+    },
+    {
+      "sha256": "585ED10E9A333329D26082D2325D198AB2234C3389FCECCE2C6F65B5DEC3115D",
+      "path": "src\\device\\DeviceProtocol.h"
+    },
+    {
+      "sha256": "C5124B1D4B088FDF913EBDDEC6FAFBBAD23265B88B059332016E09E87D95E58B",
+      "path": "src\\device\\DeviceSimulator.cpp"
+    },
+    {
+      "sha256": "457416D0D963DDC45B783FD9B9E0CA8EE089BC04BB66C8FF96E6BBFF08A0B44A",
+      "path": "src\\device\\DeviceSimulator.h"
+    },
+    {
+      "sha256": "333C524DD96AAB94352DECAD8561AC21655ACE864A5BABB7579421E6AC7DC14D",
+      "path": "src\\network\\CMakeLists.txt"
+    },
+    {
+      "sha256": "0115868C35990542EEFA7982B910419DB93B311AC6C0980F84009BD6927D6CB0",
+      "path": "src\\network\\NetworkManager.cpp"
+    },
+    {
+      "sha256": "66F28A2135D65C6CF0DA95377FEFA0F7324C318C890524488C10E8297C271895",
+      "path": "src\\network\\NetworkManager.h"
+    },
+    {
+      "sha256": "E30BDB4625D06CBE4809B33245A6076CCD20218CD3F7E5BF0433CEDFEC0E2E7A",
+      "path": "src\\network\\TcpClient.cpp"
+    },
+    {
+      "sha256": "0C0C9E69A843C509F2A8E38C9FBB82000BB62AA24BD3298CAC9D290317B2977B",
+      "path": "src\\network\\TcpClient.h"
+    },
+    {
+      "sha256": "1A9189DA4DC1470164BACA949F1D3DBCCF9021F7D9A96C41DD71B6BC196C712B",
+      "path": "src\\network\\TcpServer.cpp"
+    },
+    {
+      "sha256": "86399FDC0D295CE0B5DAA5276DA5DD7E67302BB68ED34D24A4F888745B39B9D0",
+      "path": "src\\network\\TcpServer.h"
+    },
+    {
+      "sha256": "E6BB2BCB00F813A34CEA6526C36A3563C12FA52E1AF74032073B041CCA92C631",
+      "path": "src\\thread\\AcquisitionWorker.cpp"
+    },
+    {
+      "sha256": "A3E89CA62EFBBA501DD67136CC250B713FE2583E668CADC964DAB9A5E84B14F1",
+      "path": "src\\thread\\AcquisitionWorker.h"
+    },
+    {
+      "sha256": "E2BCDBE873F0A041B72F10358FCB1E67D6C67BB3F7C78D99FB4E18F461D762F7",
+      "path": "src\\thread\\AIWorker.cpp"
+    },
+    {
+      "sha256": "6FCA1BBDBA94E94889675F537902BFC47C97A0C4E17F511502837741CA8DA2A2",
+      "path": "src\\thread\\AIWorker.h"
+    },
+    {
+      "sha256": "CFF8D961CD4F0C448185EC68358BBF8302509B23FDBD1359FFF7D73F4E42F01F",
+      "path": "src\\thread\\CMakeLists.txt"
+    },
+    {
+      "sha256": "8AF0088220FA07C580CED5073E042D5017DA390B93A41D079D0DBE88B49F5620",
+      "path": "src\\thread\\LatestMailbox.h"
+    },
+    {
+      "sha256": "3067FD12ED53ECAEAF17F3FF91FA9F0C8C096CD163ADCB26962BCA2967E846F1",
+      "path": "src\\thread\\PersistenceWorker.cpp"
+    },
+    {
+      "sha256": "FA881F5D4E1DF880DBC78991F823F5094B8525F3D69EB43D02EFA8B687779EC9",
+      "path": "src\\thread\\PersistenceWorker.h"
+    },
+    {
+      "sha256": "D3845EC65361BA97C97E3D8555E5F87C95562F79DE965C59DF5179454D5E6E42",
+      "path": "src\\thread\\RecordInbox.h"
+    },
+    {
+      "sha256": "D640F800DD6A5841A564D1ECE091B427D3DB582ED8E003F21A873F7D937FF1C0",
+      "path": "src\\thread\\SampleInbox.h"
+    },
+    {
+      "sha256": "6DF7BD8429712E096297262D1153E7C8B460B15BA37D7406636FBC6ADCF68482",
+      "path": "src\\thread\\ThreadedWorker.cpp"
+    },
+    {
+      "sha256": "92C4DB034E5FCDC2DEC92FF306BC8C0CDE96EFED93C80B86E088683F3F416E12",
+      "path": "src\\thread\\ThreadedWorker.h"
+    },
+    {
+      "sha256": "51E17034A4EDCE85936327161ACC6B00583CAF19D14C4190A86D93902C41A912",
+      "path": "src\\thread\\WorkerPool.cpp"
+    },
+    {
+      "sha256": "3EAF111E720375EEF34D499F54B7BC4BF736994A435BA9D31C07906D612877D0",
+      "path": "src\\thread\\WorkerPool.h"
+    },
+    {
+      "sha256": "2C227725571D1D100ED9F3E0FEAAC2E0EC0B1ABEB4B49465B9E9DB6DDF37831B",
+      "path": "src\\ui\\AIChatWidget.cpp"
+    },
+    {
+      "sha256": "1A221E625E2302D5A4BE2D271007DB94ADFB75AB7FCB7279924BB3982222912E",
+      "path": "src\\ui\\AIChatWidget.h"
+    },
+    {
+      "sha256": "AACA29B54D0291E154E7621608D2858B066C953CE7438F4032B632F6DF6BF115",
+      "path": "src\\ui\\CameraWidget.cpp"
+    },
+    {
+      "sha256": "ACC7CD1CBB98069E4CF202FA1D137E464302536214D7A214F56BD908EB438825",
+      "path": "src\\ui\\CameraWidget.h"
+    },
+    {
+      "sha256": "1021E7009832DFBF9E8128A95BDE104655E881C586385E53211062E26200F427",
+      "path": "src\\ui\\ChartWidget.cpp"
+    },
+    {
+      "sha256": "0EB3FFE5B57B88E103A34AC093645F6FD022DE3D12264F2C8F8C43160093CD19",
+      "path": "src\\ui\\ChartWidget.h"
+    },
+    {
+      "sha256": "8FCA5E105BE2EF227BB05B4E9044B2C727A16B70FCEAA84A08940D4C5124782E",
+      "path": "src\\ui\\CMakeLists.txt"
+    },
+    {
+      "sha256": "799FB6DB754390B85FB87E0CF37F2BBEC5AD3989975784FBD7F19BCD58D6C5C9",
+      "path": "src\\ui\\DashboardWidget.cpp"
+    },
+    {
+      "sha256": "14808C3769C1C7051E9E00F943142A0861C1903F860F7193CC23F88D62917428",
+      "path": "src\\ui\\DashboardWidget.h"
+    },
+    {
+      "sha256": "9173FF57A50323B8F0ECD94E584A216285185E0D910C5C91C1B15E53FB5717EB",
+      "path": "src\\ui\\DeviceDetailPanel.cpp"
+    },
+    {
+      "sha256": "3BEA97F6919D4B0F938D5B10D9007BDD8D92475212B0F5E9ED3876A6DF1C8F1E",
+      "path": "src\\ui\\DeviceDetailPanel.h"
+    },
+    {
+      "sha256": "5EE2064F4E296E7BAC24BA71BF58481C54751B0391F695B602F10A996E5614FA",
+      "path": "src\\ui\\DeviceListModel.cpp"
+    },
+    {
+      "sha256": "C4E05164D2214D3A275167A49420332AE4B15B8EAC867503C6A1462E0BFDE312",
+      "path": "src\\ui\\DeviceListModel.h"
+    },
+    {
+      "sha256": "D2FF77CDA6DEFFB80E7D848E7F51BC47D34EEE2B1ABB23032E17D2EF4301DE52",
+      "path": "src\\ui\\DeviceListPanel.cpp"
+    },
+    {
+      "sha256": "FC24726D72EB4E4C803F9CFA98E3093812C521D5B0117806BDBA8B309BD7040E",
+      "path": "src\\ui\\DeviceListPanel.h"
+    },
+    {
+      "sha256": "303A6FC80F96B246DB2F7FB806659ECDFF7EBDED7E3C735DCD7DEA4B96FA4553",
+      "path": "src\\ui\\GaugeWidget.cpp"
+    },
+    {
+      "sha256": "AAABB1315FF8B42B70512CCE010FE49962C2034CABCC761F63E20A201D57E3B7",
+      "path": "src\\ui\\GaugeWidget.h"
+    },
+    {
+      "sha256": "D6DB6DA829D4D661D772586AB1DC0AC56893F0FF70FEDB43CD6124022046349B",
+      "path": "src\\ui\\LogPanel.cpp"
+    },
+    {
+      "sha256": "5BB3FF8EC68404A7370E60E56400155729294F5C296957F5E336A1312DEE95EC",
+      "path": "src\\ui\\LogPanel.h"
+    },
+    {
+      "sha256": "167A183B9D60582B8DDEF41E02A2DEC63E1CF35E744A32E32335B84FC5B32E4D",
+      "path": "src\\ui\\MainWindow.cpp"
+    },
+    {
+      "sha256": "6066142223E8D8C23C8CACFCCAE0F98F35035FC47A4D5DA3CACCC5FEFFC62511",
+      "path": "src\\ui\\MainWindow.h"
+    },
+    {
+      "sha256": "8553843D79E92D3AD54F39488C6338CE2986608E922E626E83664D0D1F9F8556",
+      "path": "src\\ui\\MetricCard.cpp"
+    },
+    {
+      "sha256": "40C2A9C82419BCA55AE82D4E92EDF7E3D73387A52152692848530DB1D35D3567",
+      "path": "src\\ui\\MetricCard.h"
+    },
+    {
+      "sha256": "CAFC01F3C84F4DFF1EAF3A2A6A47C554808CA93B106489855D97268C5F4C54DF",
+      "path": "src\\ui\\ReportDialog.cpp"
+    },
+    {
+      "sha256": "A168FE59874686D1C211D3BE23D4D85F22E17BE0B2A326F1A49A6DFE1050D234",
+      "path": "src\\ui\\ReportDialog.h"
+    },
+    {
+      "sha256": "FFC9C74649C28CDDC0CF7875EEE0D75FBA61364DD27945D6433026833A7681C0",
+      "path": "src\\ui\\StateIndicator.cpp"
+    },
+    {
+      "sha256": "E35215594B13EAD5C4D5B711638C420BFE66374F0B07DF99AD6E3BA4B6B6ED1F",
+      "path": "src\\ui\\StateIndicator.h"
+    },
+    {
+      "sha256": "C972C96787FF23EEEFBBC506051C829BE0C4638D885618F9EBBCE3F175BFA4E7",
+      "path": "src\\ui\\Theme.cpp"
+    },
+    {
+      "sha256": "F33EAF99D3E94BACD1B01A9247E84F585DD98080802327A83B014E1BFB12EA4C",
+      "path": "src\\ui\\Theme.h"
+    }
+  ],
+  "logicalProcessors": 16,
+  "operatingSystem": "Microsoft Windows NT 10.0.19045.0",
+  "startedAtUtc": "2026-10-15T05:17:28.4986631Z",
+  "processor": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
+  "deviceCount": 16,
+  "intervalMs": 20,
+  "executableSha256": "F0A4A429A56B3F0574E7D3A649788FDFB52225AB4F365C8BEAD5B15612E8E25B",
+  "publishedSourceBlobs": [
+    {
+      "path": "src/ai/AIInferenceEngine.cpp",
+      "gitBlobSha1": "4a5e747ba3a535cd12bf15abc67d458073c127d4"
+    },
+    {
+      "path": "src/ai/AIInferenceEngine.h",
+      "gitBlobSha1": "a33e85d3dcbc551c4b155a4415265e9e382adfc9"
+    },
+    {
+      "path": "src/ai/AIReportGenerator.cpp",
+      "gitBlobSha1": "3dda741b1658d5709c054a2d1304defb50142f26"
+    },
+    {
+      "path": "src/ai/AIReportGenerator.h",
+      "gitBlobSha1": "c414cdc5973a4ac0fb4d3bb92f514f7d7fa7c8a1"
+    },
+    {
+      "path": "src/ai/AnomalyDetector.cpp",
+      "gitBlobSha1": "ee440cf8a1f0657038536ca4d0d626c76324ce00"
+    },
+    {
+      "path": "src/ai/AnomalyDetector.h",
+      "gitBlobSha1": "a392e3625ee5202eb68a704f71b460ffcd581eb0"
+    },
+    {
+      "path": "src/ai/CMakeLists.txt",
+      "gitBlobSha1": "0dbd7a0c31e6aa047cc96f927d5c3bff7ab66f3e"
+    },
+    {
+      "path": "src/ai/FaultPredictor.cpp",
+      "gitBlobSha1": "581ca3004552e01702b6041778920db18ea94a2e"
+    },
+    {
+      "path": "src/ai/FaultPredictor.h",
+      "gitBlobSha1": "2e5acc29debed36d76909e83a217297337881581"
+    },
+    {
+      "path": "src/ai/FeatureExtractor.cpp",
+      "gitBlobSha1": "a69e31f5bafabecb3ed86b8f65071ef06bec29b9"
+    },
+    {
+      "path": "src/ai/FeatureExtractor.h",
+      "gitBlobSha1": "ebbbae19890b4b239bb045e6ba53ae3033fd3eb5"
+    },
+    {
+      "path": "src/ai/VisionDetector.cpp",
+      "gitBlobSha1": "b0f525e8e61cf75e44b9d985e0d3a110e0661ac4"
+    },
+    {
+      "path": "src/ai/VisionDetector.h",
+      "gitBlobSha1": "6fbe4cbf01209727696c8cc912d1a39388b0eb5e"
+    },
+    {
+      "path": "src/app/ApplicationController.cpp",
+      "gitBlobSha1": "b77404c06c0aeb917e9aed9fa1e270197486436a"
+    },
+    {
+      "path": "src/app/ApplicationController.h",
+      "gitBlobSha1": "a1bb5341d3cc95a00be2c2ec860ed69f6c3f36a9"
+    },
+    {
+      "path": "src/app/CMakeLists.txt",
+      "gitBlobSha1": "99f75dfd0dd01741c258996abca582983d09f168"
+    },
+    {
+      "path": "src/common/CMakeLists.txt",
+      "gitBlobSha1": "a865460c535e8d3d22e87195074684b3fd032727"
+    },
+    {
+      "path": "src/common/ErrorCode.h",
+      "gitBlobSha1": "9096fed2fdfa77a36d98127a36d2d7e013ba3dea"
+    },
+    {
+      "path": "src/common/Result.h",
+      "gitBlobSha1": "9df794199f2ee735581d06f2d716d8dc718ec42b"
+    },
+    {
+      "path": "src/common/RingBuffer.h",
+      "gitBlobSha1": "a2d671925dd578a3f0b9272f261f655ec7131e12"
+    },
+    {
+      "path": "src/common/Types.cpp",
+      "gitBlobSha1": "f65da1a2b7a6dd1af8a355a369d06a5744c10f60"
+    },
+    {
+      "path": "src/common/Types.h",
+      "gitBlobSha1": "c5fcaff17de9cb634e6a2c64dfbafd5bb8f5f8f4"
+    },
+    {
+      "path": "src/core/CMakeLists.txt",
+      "gitBlobSha1": "22837588ac0bbe0ba3cb6cb3cde713716a8b395c"
+    },
+    {
+      "path": "src/core/ConfigManager.cpp",
+      "gitBlobSha1": "027980822ea9e58e2a79ce4ad2703eb83dba626d"
+    },
+    {
+      "path": "src/core/ConfigManager.h",
+      "gitBlobSha1": "5acc5c7efbba82b4e2749c2ad47316bd8fa42ec9"
+    },
+    {
+      "path": "src/core/Logger.cpp",
+      "gitBlobSha1": "285eb743c3c00e35a20bd6f48b97a715c28e8290"
+    },
+    {
+      "path": "src/core/Logger.h",
+      "gitBlobSha1": "f5f42d88dbe7e5546fb607711e39407296b7e04e"
+    },
+    {
+      "path": "src/database/CMakeLists.txt",
+      "gitBlobSha1": "a004dcb138620dc9883e8ae34c8c726e5e29c1e3"
+    },
+    {
+      "path": "src/database/DatabaseManager.cpp",
+      "gitBlobSha1": "30ce7fcfcf1e2543e75302e5b68b459943a57bb7"
+    },
+    {
+      "path": "src/database/DatabaseManager.h",
+      "gitBlobSha1": "7c441c7c1eb8fccf71e99f268f67dfb1c6c21ab4"
+    },
+    {
+      "path": "src/database/DataRepository.cpp",
+      "gitBlobSha1": "c7bb6bd94b016ee7043c6cc159bb6bf99c532129"
+    },
+    {
+      "path": "src/database/DataRepository.h",
+      "gitBlobSha1": "cf412bc51937d1685f1819c99eff06c5f6e9bc69"
+    },
+    {
+      "path": "src/device/CMakeLists.txt",
+      "gitBlobSha1": "85dff566056c1784587f6585b1cfbc9b148048e6"
+    },
+    {
+      "path": "src/device/Device.cpp",
+      "gitBlobSha1": "d10884e9bf480348d5098ea50e5fa298c96461fb"
+    },
+    {
+      "path": "src/device/Device.h",
+      "gitBlobSha1": "d5f1b1d0b3e7c48e4629fd111a83af6d3fbf00b8"
+    },
+    {
+      "path": "src/device/DeviceManager.cpp",
+      "gitBlobSha1": "90892f64c10b3efd217f49f0800b5c8f1dd841d8"
+    },
+    {
+      "path": "src/device/DeviceManager.h",
+      "gitBlobSha1": "ddd1314ba4751de95b3b932fd1f53ca611c02bfd"
+    },
+    {
+      "path": "src/device/DeviceProtocol.cpp",
+      "gitBlobSha1": "386fdc059d7de4dfb5bce34ce2e7570b86ea4ad8"
+    },
+    {
+      "path": "src/device/DeviceProtocol.h",
+      "gitBlobSha1": "92329b16af86e5886149353a960e2aafcc2617a3"
+    },
+    {
+      "path": "src/device/DeviceSimulator.cpp",
+      "gitBlobSha1": "711ffb7ec24a1deacc0b8af1371c0427e18407f9"
+    },
+    {
+      "path": "src/device/DeviceSimulator.h",
+      "gitBlobSha1": "b3a058234f5692f88b7bb13ae4ce31fdeb19c451"
+    },
+    {
+      "path": "src/network/CMakeLists.txt",
+      "gitBlobSha1": "b64d1868fa9b4bd2b1bc9d91d9fabd28e3878600"
+    },
+    {
+      "path": "src/network/NetworkManager.cpp",
+      "gitBlobSha1": "189c0ecb33eea4c771847ee4edca449ccb5a9424"
+    },
+    {
+      "path": "src/network/NetworkManager.h",
+      "gitBlobSha1": "4af862bc763c64329aeabd575dbd5ec9c5313c5e"
+    },
+    {
+      "path": "src/network/TcpClient.cpp",
+      "gitBlobSha1": "0dd8cd09daaa390a4f11456ef1a09ecbbe8dce12"
+    },
+    {
+      "path": "src/network/TcpClient.h",
+      "gitBlobSha1": "804a78756397d33f8fc4ac53c3744aa2c3af8219"
+    },
+    {
+      "path": "src/network/TcpServer.cpp",
+      "gitBlobSha1": "3d39aa349e969f63dd4f1fccc5539e8eb00b6c6a"
+    },
+    {
+      "path": "src/network/TcpServer.h",
+      "gitBlobSha1": "7a3d5101bae15c5a06a4d0b0395354e3eda7e776"
+    },
+    {
+      "path": "src/thread/AcquisitionWorker.cpp",
+      "gitBlobSha1": "95859a13d410f75697a7bcb6a875cdd512692c2f"
+    },
+    {
+      "path": "src/thread/AcquisitionWorker.h",
+      "gitBlobSha1": "5851dba72115b14d2629fbeac777596413a305cf"
+    },
+    {
+      "path": "src/thread/AIWorker.cpp",
+      "gitBlobSha1": "862c2c0c2244a50b3ee6c601cc875c67c2758677"
+    },
+    {
+      "path": "src/thread/AIWorker.h",
+      "gitBlobSha1": "3ad9c405346a371ec4563e27ea8b64d3b6cb173a"
+    },
+    {
+      "path": "src/thread/CMakeLists.txt",
+      "gitBlobSha1": "275e020bb554f706ea52741795012e113088c41e"
+    },
+    {
+      "path": "src/thread/LatestMailbox.h",
+      "gitBlobSha1": "93302b9258aa5f4d8fa3fa7a23f175561cc47526"
+    },
+    {
+      "path": "src/thread/PersistenceWorker.cpp",
+      "gitBlobSha1": "97f07f5720a35e543c6ba4aefbe092001d3b89ca"
+    },
+    {
+      "path": "src/thread/PersistenceWorker.h",
+      "gitBlobSha1": "dd994b498b8f33154b9adc3c438677d5efa26d39"
+    },
+    {
+      "path": "src/thread/RecordInbox.h",
+      "gitBlobSha1": "8f9a8dc358272b8158d320fe4f24989544833142"
+    },
+    {
+      "path": "src/thread/SampleInbox.h",
+      "gitBlobSha1": "91c550d90f880ad801cd10e587b90fc80d6615ce"
+    },
+    {
+      "path": "src/thread/ThreadedWorker.cpp",
+      "gitBlobSha1": "981cd7502882261b80a48f84920259697675c553"
+    },
+    {
+      "path": "src/thread/ThreadedWorker.h",
+      "gitBlobSha1": "2baccac5bd5431d79f76e66d46bcb13d7556b251"
+    },
+    {
+      "path": "src/thread/WorkerPool.cpp",
+      "gitBlobSha1": "e711018934c9f68d813275c3b45fb2fc04664dcc"
+    },
+    {
+      "path": "src/thread/WorkerPool.h",
+      "gitBlobSha1": "bdcda9050f7358bb0790fc6c29dcc6c655250f90"
+    },
+    {
+      "path": "src/ui/AIChatWidget.cpp",
+      "gitBlobSha1": "47658d603db15fa866c7c8e51e91c743446badf0"
+    },
+    {
+      "path": "src/ui/AIChatWidget.h",
+      "gitBlobSha1": "0895f8c0529af46f459241d740e2cb706da98274"
+    },
+    {
+      "path": "src/ui/CameraWidget.cpp",
+      "gitBlobSha1": "1c24f6a5e68a98f38d56040f90d87a7611cf3af0"
+    },
+    {
+      "path": "src/ui/CameraWidget.h",
+      "gitBlobSha1": "f9942af339d86c7d24e413e0cef483a05e65336e"
+    },
+    {
+      "path": "src/ui/ChartWidget.cpp",
+      "gitBlobSha1": "f45ea8e7ce6f1ad4d7b5dae3f96188cf17267778"
+    },
+    {
+      "path": "src/ui/ChartWidget.h",
+      "gitBlobSha1": "48d9e18ec55f66f5ad537254a7a732d9b4083d80"
+    },
+    {
+      "path": "src/ui/CMakeLists.txt",
+      "gitBlobSha1": "f2578412b95cbe16325d6629e14b60d027d5abbd"
+    },
+    {
+      "path": "src/ui/DashboardWidget.cpp",
+      "gitBlobSha1": "35859815808da688a2289703c09b9a67e2ae33c9"
+    },
+    {
+      "path": "src/ui/DashboardWidget.h",
+      "gitBlobSha1": "0551cfc3ed40176af833f629fcdfcbbba6af19ef"
+    },
+    {
+      "path": "src/ui/DeviceDetailPanel.cpp",
+      "gitBlobSha1": "c1e5c49aa12b6bb14f84d699645018cea963f7c7"
+    },
+    {
+      "path": "src/ui/DeviceDetailPanel.h",
+      "gitBlobSha1": "cf9c2113395c37e8b0bc72519e732d75e7a11aa6"
+    },
+    {
+      "path": "src/ui/DeviceListModel.cpp",
+      "gitBlobSha1": "09ef8a17baca3ca889adb7f048c605c650aa1d28"
+    },
+    {
+      "path": "src/ui/DeviceListModel.h",
+      "gitBlobSha1": "86c194f5aefa637e6c2c628ffc355b4b1fe0d43a"
+    },
+    {
+      "path": "src/ui/DeviceListPanel.cpp",
+      "gitBlobSha1": "e26c78b379c7e84ab5b1125444d4bd11cc57e7d2"
+    },
+    {
+      "path": "src/ui/DeviceListPanel.h",
+      "gitBlobSha1": "f3042fd23a38bb4b9943d977585521d8d5b90778"
+    },
+    {
+      "path": "src/ui/GaugeWidget.cpp",
+      "gitBlobSha1": "c95d683a812bfc9a7a096ffef17aedd2cc526ed1"
+    },
+    {
+      "path": "src/ui/GaugeWidget.h",
+      "gitBlobSha1": "d49d67ef8da160b01c647672e174480127998ca3"
+    },
+    {
+      "path": "src/ui/LogPanel.cpp",
+      "gitBlobSha1": "fac37c804e38f601c00ec153355e0343cfff8183"
+    },
+    {
+      "path": "src/ui/LogPanel.h",
+      "gitBlobSha1": "15ad0c71ffb149e39ddbab3b0a554ced727d099d"
+    },
+    {
+      "path": "src/ui/MainWindow.cpp",
+      "gitBlobSha1": "875b8edfe5208fee1768da1026b76c8335cfb416"
+    },
+    {
+      "path": "src/ui/MainWindow.h",
+      "gitBlobSha1": "54c4c0b6027d53dd1f59c835df24ed12cbd3e320"
+    },
+    {
+      "path": "src/ui/MetricCard.cpp",
+      "gitBlobSha1": "2e60ca3295b3dd6369cd484f93e23544866243cf"
+    },
+    {
+      "path": "src/ui/MetricCard.h",
+      "gitBlobSha1": "c774d9ac6a88e24693c88d739591c981aaa0e738"
+    },
+    {
+      "path": "src/ui/ReportDialog.cpp",
+      "gitBlobSha1": "3f4b70965f3456692d05eb0e2af6e3234b018eb7"
+    },
+    {
+      "path": "src/ui/ReportDialog.h",
+      "gitBlobSha1": "ab3576a51662a0027559327585340874b3b8a166"
+    },
+    {
+      "path": "src/ui/StateIndicator.cpp",
+      "gitBlobSha1": "30c4c08e6a16628903b97c02ad2b868ccec1ce83"
+    },
+    {
+      "path": "src/ui/StateIndicator.h",
+      "gitBlobSha1": "532aa991b6abd6d92fbc3282be4d8b5da5e55b37"
+    },
+    {
+      "path": "src/ui/Theme.cpp",
+      "gitBlobSha1": "937f539a33c85933c83443aa4a7c6f51c4b5a30c"
+    },
+    {
+      "path": "src/ui/Theme.h",
+      "gitBlobSha1": "eaf722bad15bd910da7b99c5a338e8f1048cfd23"
+    }
+  ],
+  "publicationNote": "Original SHA256 hashes match the tested local files. Git blob SHA1 hashes use repository text normalization and allow verification after cloning with LF line endings."
+}

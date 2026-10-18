@@ -1,0 +1,60 @@
+name: Windows build and acceptance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      stress_seconds:
+        description: Sustained load duration (seconds)
+        type: choice
+        options: ['60', '1800']
+        default: '60'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  demo:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Install Qt and matching MinGW
+        uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1
+        with:
+          version: '6.8.3'
+          arch: win64_mingw
+          modules: qtcharts qtsvg
+          tools: tools_mingw1310
+          add-tools-to-path: true
+          cache: true
+      - name: Build, test, stress and verify deployment
+        env:
+          STRESS_SECONDS: ${{ inputs.stress_seconds || '60' }}
+        run: |
+          $compiler = Join-Path (Split-Path (Split-Path $env:QT_ROOT_DIR)) 'Tools/mingw1310_64/bin'
+          ./scripts/ci.ps1 -QtRoot $env:QT_ROOT_DIR -CompilerBin $compiler -StressSeconds ([int]$env:STRESS_SECONDS)
+      - name: Preserve acceptance evidence even after failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            build/acceptance/ci/**
+            !build/acceptance/ci/**/*.db*
+            !build/acceptance/ci/**/*.exe
+            build/demo/Testing/Temporary/*.log
+            build/demo/CMakeFiles/CMakeConfigureLog.yaml

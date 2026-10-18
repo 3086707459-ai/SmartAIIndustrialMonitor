@@ -1,0 +1,13 @@
+{
+  "network": {
+    "server": { "listenAddress": "127.0.0.1", "listenPort": 9100 },
+    "client": { "remoteHost": "127.0.0.1", "remotePort": 9100, "autoConnect": true }
+  },
+  "simulation": {
+    "enabled": true,
+    "sampleIntervalMs": 500,
+    "injectAnomalies": false
+  },
+  "ai": { "enableOnnx": false, "enableVision": false },
+  "database": { "filePath": "data/smartai.db", "flushIntervalMs": 1000, "batchSize": 200 }
+}

@@ -1,0 +1,17 @@
+{
+  "scope": "Local execution of scripts/ci.ps1, not a GitHub Actions run or clean VM",
+  "passed": true,
+  "strictReleaseBuild": true,
+  "ctestTargets": 10,
+  "behaviorCases": 77,
+  "stressSeconds": 60,
+  "stressPassed": true,
+  "samples": 48000,
+  "storageDropped": 0,
+  "deploymentPassed": true,
+  "nativePlatform": "windows",
+  "deploymentSensorRows": 498,
+  "chartPoints": 30,
+  "packageSha256": "2AB32A66C1EF65C53E07D1B61EACC697FC2B5323EF5E12D6E8F75914F838CAB6",
+  "sourceDirectory": "build/acceptance/ci-20261018"
+}

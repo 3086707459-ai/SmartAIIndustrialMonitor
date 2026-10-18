@@ -1,0 +1,31 @@
+{
+  "source": "build/acceptance/package-20261015-r2/acceptance-result.json",
+  "scope": "local process isolation; not a clean VM certification",
+  "testedAtUtc": "2026-10-15T05:17:56.9821041Z",
+  "runtimeModules": [
+    "Qt6Charts.dll",
+    "Qt6Network.dll",
+    "Qt6Core.dll",
+    "Qt6Gui.dll",
+    "Qt6Sql.dll",
+    "Qt6Widgets.dll",
+    "libgcc_s_seh-1.dll",
+    "libstdc++-6.dll",
+    "Qt6OpenGL.dll",
+    "Qt6OpenGLWidgets.dll",
+    "libwinpthread-1.dll",
+    "Qt6Svg.dll",
+    "qwindows.dll",
+    "qsvgicon.dll",
+    "qsvg.dll",
+    "qsqlite.dll"
+  ],
+  "nativePlatform": "windows",
+  "archiveSha256": "271D0E1EDF412F3FC24261E7AF1B15B815BF783F82C5D0D30A9DDFAEDD9A33A6",
+  "operatingSystem": "Microsoft Windows NT 10.0.19045.0",
+  "passed": true,
+  "chartPoints": 30,
+  "manifestFiles": 40,
+  "cleanVmVerified": false,
+  "sensorRows": 498
+}

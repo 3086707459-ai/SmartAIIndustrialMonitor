@@ -1,0 +1,87 @@
+SmartAI Industrial Monitor — architecture (2026-10-15)
+
+Composition root
+  apps/monitor/main.cpp creates QApplication and ConfigManager.
+  src/app/ApplicationController wires the application and owns DeviceManager,
+  WorkerPool, the optional in-process TcpServer, and MainWindow. ConfigManager
+  is borrowed and must outlive the controller.
+
+Thread ownership
+  UI thread: controller, DeviceManager, Device objects, widgets, and simulator.
+  Acquisition thread: TcpClient, bounded socket receive buffer, frame decoder.
+  Persistence thread: SQLite, repositories, bounded inbox drain / flush timers.
+  AI thread: bounded inbox, windows, models, anomaly detectors, report renderer.
+
+Telemetry path
+  Simulator / external gateway
+    -> TCP bytes: SA magic + version + type + big-endian length + JSON
+    -> AcquisitionWorker / ProtocolCodec
+       -> bounded waiting FIFO -> PersistenceWorker timer (256 per tick)
+       -> bounded drop-oldest FIFO -> AIWorker timer (128 per tick)
+       -> bounded per-device latest mailbox -> UI timer -> DeviceManager
+
+  Direct signal connections only call locked mailbox methods. They never run
+  SQL, inference or Device mutations on the producer. No Qt event per sample.
+  Storage waits for space for at most 5 ms, then explicitly rejects and counts.
+  A 64 KiB socket read buffer propagates slower consumption toward TCP flow
+  control. The simulator disconnects clients with over 4 MiB pending writes.
+
+  PersistenceWorker evaluates physical limits when it handles each sample,
+  buffers the resulting state, and writes batches transactionally. Later
+  threshold changes do not rewrite the state of already buffered rows.
+
+  AIWorker uses its own copied device limits and per-device sample windows.
+  It publishes analysis values through a bounded per-device latest mailbox.
+  The controller applies predictions to Device objects on the UI thread.
+  Model alarms, predictions and anomalies enter a bounded storage inbox.
+  Camera display keeps at most one pending frame. The UI receives coalesced telemetry;
+  its retained window is therefore not the full database sample stream.
+
+Configuration path
+  ConfigManager provides locked value copies of typed configuration.
+  DeviceManager reconciles the device registry on the UI thread.
+  The controller publishes DeviceConfiguration value snapshots to workers.
+  Workers register new database parents, replace their own limits, and stop
+  accepting samples for removed/disabled devices. An explicit empty devices
+  array clears the fleet, including the controller-managed simulator.
+
+  Configuration takes effect when each worker processes its queued update;
+  this is not a globally atomic transition across workers. Network endpoints,
+  database paths, inbox capacities and model backends currently require restart.
+  Output paths use resolveDataPath(): no search through ancestor directories.
+  Resource/model lookup retains the separate read-side resolvePath() policy.
+
+Report path
+  The controller copies selected DeviceReportSection values on the UI thread.
+  AIWorker renders that snapshot without accessing live Device objects.
+  Reports describe the retained in-memory telemetry window; alarm counts are
+  since startup. They are not historical database reports. Exported content
+  explicitly includes that limitation and uses the actual window time range.
+
+Shutdown
+  Acquisition stops before downstream workers. Each worker stops timers and
+  releases thread-affine resources in its own thread, then moves back to its
+  owning thread for destruction. The controller applies final latest values
+  after acquisition and AI join, while persistence can still accept records.
+  Persistence drains its sample inbox into a bounded batch and makes a final
+  commit attempt, then drains accepted derived records. SQL failure is counted
+  and puts further writes into a cooldown instead of repeated lock waits.
+  Unanalysed AI input may be cancelled explicitly. Cooperative stop still
+  depends on tasks returning; model cancellation and control-request admission
+  limits remain follow-up work. Production threads are never forcibly killed.
+
+Build boundaries
+  app -> ui -> thread -> {ai, network, database} -> device -> core/common
+  CMake targets express the intended dependency direction. Transitive public
+  dependencies do not prohibit every unwanted include; code review must also
+  enforce the thread-ownership and layer contracts above.
+
+Evidence and limits
+  tests/unit: common, device, AI, protocol, SQLite and worker behavior.
+  tests/integration: real localhost TCP pipeline, live configuration changes,
+  and offscreen UI rendering, chart data and shutdown ownership.
+  tests/stress: sustained independent TCP gateway, queue/memory/SQL acceptance.
+  tests/deployment: native GUI probe from a package with SDK environment removed.
+  See docs/backpressure.md for queue policies and metric definitions, and
+  docs/deployment-acceptance.md for the unverified clean-VM boundary.
+  See docs/quality-review.md for verified scope and unresolved engineering work.
