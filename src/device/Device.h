@@ -12,20 +12,20 @@
 // Threading contract
 // ------------------
 // A Device is *owned* by the DeviceManager, which lives on the main (UI) thread.
-// Worker threads never touch the object directly; they post samples to it via
-// queued signals.  "affinity" is therefore always the UI thread, and every
+// Worker threads never touch the object directly; the controller drains bounded
+// value mailboxes on the UI thread. "affinity" is therefore always the UI thread, and every
 // mutation happens there - which removes an entire class of data race by
 // construction rather than by locking.
 //
-// To keep the UI responsive while still retaining history for the AI layer, the
-// rolling window is kept here but only the *snapshot* is copied out when the
-// inference worker asks for it.  See DeviceManager::historySnapshot().
+// This rolling window serves the UI and report snapshots. AIWorker maintains
+// its own sample window and never reads Device from a worker thread.
 // ---------------------------------------------------------------------------
 
 #include "common/RingBuffer.h"
 #include "common/Types.h"
 
 #include <QObject>
+#include <QElapsedTimer>
 #include <QString>
 #include <QVector>
 
@@ -98,9 +98,12 @@ public:
     /// A machine-readable snapshot for the protocol / persistence layers.
     [[nodiscard]] QJsonObject toJson() const;
 
+    /// Applies one complete worker result atomically. Returns false when the
+    /// device has no live telemetry or either result belongs to another device.
+    bool applyAnalysis(const FaultPrediction& prediction, const AnomalyEvent& anomaly);
+
 public slots:
-    /// Entry point for telemetry.  Connected to the acquisition worker with a
-    /// queued connection, so this executes on the UI thread.
+    /// Telemetry entry point, called by the controller on the UI thread.
     void onSampleReceived(const saim::SensorSample& sample);
 
     /// Applies an AI verdict produced off-thread.
@@ -133,6 +136,8 @@ private:
     /// device stuck in Warning does not generate 20 identical alarms a second.
     void raiseAlarm(DeviceState state, const QString& message, int suppressionMs);
     [[nodiscard]] QString describeAnomaly(const SensorSample& sample) const;
+    [[nodiscard]] bool acceptsDiagnostic(const QString& deviceId, const QDateTime& timestamp) const;
+    void clearDiagnostics();
 
     QString   m_deviceId;
     QString   m_deviceName;
@@ -146,6 +151,7 @@ private:
     DeviceState   m_state = DeviceState::Offline;
     SensorSample  m_latest;
     QDateTime     m_lastSeen;
+    QElapsedTimer m_lastTelemetryClock;
     qint64        m_sampleCount = 0;
     qint64        m_alarmCount  = 0;
 
@@ -155,7 +161,7 @@ private:
 
     // Alarm bookkeeping for repeat suppression.
     DeviceState m_lastAlarmedState = DeviceState::Normal;
-    QDateTime   m_lastAlarmTime;
+    QElapsedTimer m_lastAlarmClock;
     bool        m_alarmLatched = false;
 };
 

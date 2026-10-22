@@ -687,6 +687,48 @@ SAIM_TEST(live_configuration_updates_states_and_registers_new_devices)
     rig.controller->stop();
 }
 
+SAIM_TEST(controller_applies_complete_analysis_without_reviving_offline_devices)
+{
+    Rig rig;
+    rig.config = makeConfig(nextPort(), true);
+    rig.controller = std::make_unique<ApplicationController>(rig.config.get());
+    SAIM_CHECK(rig.controller->initialise().isOk());
+    const auto motor = rig.device(QStringLiteral("MOTOR-001"));
+    SensorSample sample;
+    sample.deviceId = motor->deviceId();
+    sample.timestamp = QDateTime::currentDateTime();
+    sample.temperature = 40; sample.voltage = 220; sample.current = 8;
+    sample.vibration = 0.1; sample.valid = true;
+    motor->onSampleReceived(sample);
+    AIAnalysisResult result;
+    result.prediction.deviceId = result.anomaly.deviceId = motor->deviceId();
+    result.prediction.timestamp = result.anomaly.timestamp = sample.timestamp;
+    result.prediction.faultType = QStringLiteral("Bearing Failure");
+    result.prediction.healthScore = 25;
+    result.prediction.failureProbability = 0.9;
+    const auto deliver = [&] {
+        SAIM_CHECK(QMetaObject::invokeMethod(rig.controller.get(), "onAnalysisReady",
+            Qt::DirectConnection, Q_ARG(saim::AIAnalysisResult, result)));
+    };
+    deliver();
+    SAIM_CHECK(motor->state() == DeviceState::Fault);
+    int changes = 0;
+    QObject observer;
+    QObject::connect(motor.get(), &Device::statusChanged, &observer, [&] { ++changes; });
+    const auto alarms = motor->alarmCount();
+    result.prediction.healthScore = 100;
+    result.prediction.failureProbability = 0;
+    result.anomaly.level = AnomalyLevel::High;
+    deliver();
+    SAIM_CHECK(changes == 0 && motor->alarmCount() == alarms);
+    motor->checkLiveness(0);
+    const auto offlineAlarms = motor->alarmCount();
+    deliver();
+    SAIM_CHECK(motor->state() == DeviceState::Offline);
+    SAIM_CHECK(motor->alarmCount() == offlineAlarms);
+    SAIM_CHECK(motor->prediction().faultType.isEmpty());
+}
+
 int main()
 {
     // QCoreApplication, not QGuiApplication: the pipeline has no widgets, and

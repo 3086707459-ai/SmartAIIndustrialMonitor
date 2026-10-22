@@ -44,7 +44,7 @@ P95 指入队后等待到出队的延迟桶上界，不是网络到磁盘端到�
 
 GUI 按设备合并 1,177,888 条中间值，这是显示路径的既定策略，不计作存储丢失。测试未创建 Widgets，GUI 原生渲染由独立部署验收覆盖。
 
-发布前已逐项核对源码与长测保存的 SHA256 一致。运行信息还包含 `publishedSourceBlobs`，用于按 Git 规范化后的文件内容核对；例如 `git rev-parse HEAD:src/thread/SampleInbox.h` 应与该条目的 `gitBlobSha1` 一致，避免 Windows CRLF 与仓库 LF 换行差异造成误报。
+首次发布前已逐项核对源码与长测保存的 SHA256 一致。这是 2026-10-15 版本的历史实测，后续代码改动不自动继承该结果。运行信息还包含 `publishedSourceBlobs`，用于按 Git 规范化后的文件内容核对；例如 `git rev-parse 1968eb3:src/thread/SampleInbox.h` 应与该条目的 `gitBlobSha1` 一致，避免 Windows CRLF 与仓库 LF 换行差异造成误报。
 
 ![30 分钟吞吐、内存、队列峰值与最终检查](acceptance/stress-20261015.png)
 

@@ -961,8 +961,7 @@ void ApplicationController::onAnalysisReady(const AIAnalysisResult& result)
     // Applied on this thread, which is the UI thread.  Device is UI-affine by
     // contract - see Device.h - and routing the verdict through a direct call
     // rather than a connection keeps the state machine single-threaded.
-    device->onPredictionReady(result.prediction);
-    device->onAnomalyDetected(result.anomaly);
+    if (!device->applyAnalysis(result.prediction, result.anomaly)) { return; }
 
     if (m_window != nullptr)
     {

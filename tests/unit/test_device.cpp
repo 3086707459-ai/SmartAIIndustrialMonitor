@@ -344,6 +344,153 @@ SAIM_TEST(statistics_count_matches_the_retained_window)
     SAIM_CHECK(device.statistics().sampleCount == 3);
 }
 
+SAIM_TEST(late_analysis_cannot_revive_a_timed_out_device)
+{
+    Device device(QStringLiteral("M1"));
+    device.onSampleReceived(normalSample(QStringLiteral("M1")));
+    device.checkLiveness(0);
+    const auto alarms = device.alarmCount();
+    QSignalSpy predictions(&device, &Device::predictionUpdated);
+    QSignalSpy anomalies(&device, &Device::anomalyDetected);
+    FaultPrediction prediction;
+    prediction.deviceId = QStringLiteral("M1");
+    prediction.timestamp = QDateTime::currentDateTime();
+    prediction.faultType = QStringLiteral("None");
+    device.onPredictionReady(prediction);
+    AnomalyEvent anomaly;
+    anomaly.deviceId = QStringLiteral("M1");
+    anomaly.timestamp = prediction.timestamp;
+    anomaly.level = AnomalyLevel::High;
+    device.onAnomalyDetected(anomaly);
+    SAIM_CHECK(device.state() == DeviceState::Offline);
+    SAIM_CHECK(device.alarmCount() == alarms);
+    SAIM_CHECK(predictions.isEmpty() && anomalies.isEmpty());
+}
+
+SAIM_TEST(disabled_devices_reject_diagnostics_until_new_telemetry)
+{
+    Device device(QStringLiteral("M1"));
+    device.onSampleReceived(normalSample(QStringLiteral("M1")));
+    device.setEnabled(false);
+    AnomalyEvent anomaly;
+    anomaly.deviceId = QStringLiteral("M1");
+    anomaly.timestamp = QDateTime::currentDateTime();
+    anomaly.level = AnomalyLevel::High;
+    device.onAnomalyDetected(anomaly);
+    SAIM_CHECK(device.alarmCount() == 0);
+    device.setEnabled(true);
+    FaultPrediction prediction;
+    prediction.deviceId = QStringLiteral("M1");
+    prediction.timestamp = anomaly.timestamp;
+    prediction.faultType = QStringLiteral("None");
+    device.onPredictionReady(prediction);
+    SAIM_CHECK(device.state() == DeviceState::Offline);
+    device.onSampleReceived(normalSample(QStringLiteral("M1")));
+    SAIM_CHECK(device.state() == DeviceState::Normal);
+}
+
+SAIM_TEST(anomaly_changes_state_immediately_and_does_not_repeat_alarms)
+{
+    Device device(QStringLiteral("M1"));
+    device.onSampleReceived(normalSample(QStringLiteral("M1")));
+    AnomalyEvent anomaly;
+    anomaly.deviceId = QStringLiteral("M1");
+    anomaly.timestamp = QDateTime::currentDateTime();
+    anomaly.level = AnomalyLevel::High;
+    anomaly.reason = QStringLiteral("Vibration spike");
+    QSignalSpy alarms(&device, &Device::alarmTriggered);
+    device.onAnomalyDetected(anomaly);
+    SAIM_CHECK(device.state() == DeviceState::Fault);
+    SAIM_CHECK(alarms.count() == 1);
+    SAIM_CHECK(alarms.at(0).at(0).value<AlarmRecord>().message.contains(anomaly.reason));
+    device.onAnomalyDetected(anomaly);
+    SAIM_CHECK(alarms.count() == 1);
+    anomaly.level = AnomalyLevel::None;
+    device.onAnomalyDetected(anomaly);
+    SAIM_CHECK(device.state() == DeviceState::Normal);
+}
+
+SAIM_TEST(complete_analysis_has_no_intermediate_recovery_or_duplicate_alarm)
+{
+    Device device(QStringLiteral("M1"));
+    device.onSampleReceived(normalSample(QStringLiteral("M1")));
+    FaultPrediction prediction;
+    prediction.deviceId = QStringLiteral("M1");
+    prediction.timestamp = QDateTime::currentDateTime();
+    prediction.faultType = QStringLiteral("Bearing Failure");
+    prediction.backend = QStringLiteral("heuristic");
+    prediction.healthScore = 25;
+    prediction.failureProbability = 0.9;
+    AnomalyEvent anomaly;
+    anomaly.deviceId = prediction.deviceId;
+    anomaly.timestamp = prediction.timestamp;
+    SAIM_CHECK(device.applyAnalysis(prediction, anomaly));
+    SAIM_CHECK(device.state() == DeviceState::Fault);
+    const auto count = device.alarmCount();
+    QSignalSpy states(&device, &Device::statusChanged);
+    prediction.healthScore = 100;
+    prediction.failureProbability = 0;
+    prediction.faultType = QStringLiteral("None");
+    anomaly.level = AnomalyLevel::High;
+    SAIM_CHECK(device.applyAnalysis(prediction, anomaly));
+    SAIM_CHECK(device.state() == DeviceState::Fault);
+    SAIM_CHECK(states.isEmpty());
+    SAIM_CHECK(device.alarmCount() == count);
+    anomaly.level = AnomalyLevel::None;
+    SAIM_CHECK(device.applyAnalysis(prediction, anomaly));
+    SAIM_CHECK(device.state() == DeviceState::Normal);
+    SAIM_CHECK(states.count() == 1);
+    device.onSampleReceived(makeSample(QStringLiteral("M1"), 95, 220, 8, 0.1));
+    SAIM_CHECK(device.applyAnalysis(prediction, anomaly));
+    SAIM_CHECK(device.state() == DeviceState::Fault); // healthy AI cannot override physical limits
+}
+
+SAIM_TEST(misrouted_or_undated_analysis_is_rejected_without_partial_update)
+{
+    Device device(QStringLiteral("M1"));
+    device.onSampleReceived(normalSample(QStringLiteral("M1")));
+    FaultPrediction prediction;
+    prediction.deviceId = QStringLiteral("M1");
+    prediction.timestamp = QDateTime::currentDateTime();
+    prediction.faultType = QStringLiteral("None");
+    AnomalyEvent anomaly;
+    anomaly.deviceId = QStringLiteral("M2");
+    anomaly.timestamp = prediction.timestamp;
+    anomaly.level = AnomalyLevel::High;
+    QSignalSpy predictions(&device, &Device::predictionUpdated);
+    SAIM_CHECK(!device.applyAnalysis(prediction, anomaly));
+    SAIM_CHECK(device.prediction().faultType.isEmpty() && predictions.isEmpty());
+    device.onAnomalyDetected(anomaly);
+    prediction.deviceId = QStringLiteral("M2");
+    device.onPredictionReady(prediction);
+    SAIM_CHECK(predictions.isEmpty() && device.alarmCount() == 0);
+    prediction.deviceId = anomaly.deviceId = QStringLiteral("M1");
+    anomaly.timestamp = {};
+    SAIM_CHECK(!device.applyAnalysis(prediction, anomaly));
+    SAIM_CHECK(device.state() == DeviceState::Normal);
+}
+
+SAIM_TEST(new_telemetry_session_does_not_inherit_old_diagnostics)
+{
+    Device device(QStringLiteral("M1"));
+    device.onSampleReceived(normalSample(QStringLiteral("M1")));
+    FaultPrediction prediction;
+    prediction.deviceId = QStringLiteral("M1");
+    prediction.timestamp = QDateTime::currentDateTime();
+    prediction.faultType = QStringLiteral("Bearing Failure");
+    prediction.healthScore = 25;
+    prediction.failureProbability = 0.9;
+    device.onPredictionReady(prediction);
+    SAIM_CHECK(device.state() == DeviceState::Fault);
+    device.checkLiveness(0);
+    SAIM_CHECK(device.prediction().faultType.isEmpty());
+    const auto alarms = device.alarmCount();
+    device.onSampleReceived(normalSample(QStringLiteral("M1")));
+    SAIM_CHECK(device.state() == DeviceState::Normal);
+    SAIM_CHECK(device.alarmCount() == alarms);
+    SAIM_CHECK(device.latest().isValid() && device.historySize() == 2);
+}
+
 int main()
 {
     // A QCoreApplication is needed because Device uses QDateTime (which is

@@ -81,6 +81,9 @@ void Device::setEnabled(bool enabled)
     m_enabled = enabled;
     if (!enabled)
     {
+        m_lastTelemetryClock.invalidate();
+        clearDiagnostics();
+        m_alarmLatched = false;
         m_state = DeviceState::Offline;
         emit statusChanged(m_deviceId, m_state);
     }
@@ -123,6 +126,13 @@ void Device::onSampleReceived(const SensorSample& sample)
         return;
     }
 
+    if (!m_lastTelemetryClock.isValid())
+    {
+        // A new telemetry session must not inherit a previous session's verdict.
+        clearDiagnostics();
+        m_alarmLatched = false;
+    }
+    m_lastTelemetryClock.start();
     m_latest = sample;
     if (!m_latest.timestamp.isValid())
     {
@@ -139,45 +149,65 @@ void Device::onSampleReceived(const SensorSample& sample)
 
 void Device::onPredictionReady(const FaultPrediction& prediction)
 {
+    if (!acceptsDiagnostic(prediction.deviceId, prediction.timestamp)) { return; }
     m_prediction = prediction;
-    emit predictionUpdated(m_prediction);
     reevaluateState(/*fromTelemetry=*/false);
+    emit predictionUpdated(m_prediction);
 }
 
 void Device::onAnomalyDetected(const AnomalyEvent& event)
 {
+    if (!acceptsDiagnostic(event.deviceId, event.timestamp)) { return; }
     m_lastAnomaly = event;
+    reevaluateState(/*fromTelemetry=*/false);
     emit anomalyDetected(m_lastAnomaly);
+}
 
-    if (event.isSignificant())
-    {
-        const DeviceState implied = event.level >= AnomalyLevel::High ? DeviceState::Fault
-                                                                      : DeviceState::Warning;
-        raiseAlarm(implied,
-                   QStringLiteral("Anomaly [%1] %2 (score %3)")
-                       .arg(toString(event.level), event.reason)
-                       .arg(event.score, 0, 'f', 2),
-                   0);   // anomaly events are already rate-limited upstream
-    }
+bool Device::acceptsDiagnostic(const QString& deviceId, const QDateTime& timestamp) const
+{
+    return m_enabled && m_lastTelemetryClock.isValid()
+           && deviceId == m_deviceId && timestamp.isValid();
+}
+
+void Device::clearDiagnostics()
+{
+    m_prediction = {};
+    m_lastAnomaly = {};
+}
+
+bool Device::applyAnalysis(const FaultPrediction& prediction, const AnomalyEvent& anomaly)
+{
+    if (!acceptsDiagnostic(prediction.deviceId, prediction.timestamp)
+        || !acceptsDiagnostic(anomaly.deviceId, anomaly.timestamp)) { return false; }
+    m_prediction = prediction;
+    m_lastAnomaly = anomaly;
+    // Publish only the combined state, never an intermediate recovery followed
+    // by a second alarm when severity moves between the two analysis components.
+    reevaluateState(/*fromTelemetry=*/false);
+    emit predictionUpdated(m_prediction);
+    emit anomalyDetected(m_lastAnomaly);
+    return true;
 }
 
 void Device::checkLiveness(int timeoutMs)
 {
-    if (!m_enabled || m_state == DeviceState::Offline)
+    if (!m_enabled || m_state == DeviceState::Offline || timeoutMs < 0)
     {
         return;
     }
-    if (!m_lastSeen.isValid())
+    if (!m_lastTelemetryClock.isValid())
     {
         return;   // never seen - remains Offline until the first frame
     }
-    if (m_lastSeen.msecsTo(QDateTime::currentDateTime()) >= timeoutMs)
+    if (m_lastTelemetryClock.elapsed() >= timeoutMs)
     {
         SAIM_WARN(logcat::kDevice,
                   QStringLiteral("Device %1 went offline (no data for %2 ms)")
                       .arg(m_deviceId)
                       .arg(timeoutMs));
         m_state = DeviceState::Offline;
+        m_lastTelemetryClock.invalidate();
+        clearDiagnostics();
         m_alarmLatched = false;
         emit statusChanged(m_deviceId, m_state);
         raiseAlarm(DeviceState::Offline,
@@ -198,6 +228,9 @@ void Device::acknowledgeAlarm()
 
 void Device::reevaluateState(bool fromTelemetry)
 {
+    // Historical telemetry remains available for inspection while offline.
+    // Only receiving new telemetry can re-establish liveness.
+    if (!m_enabled || !m_lastTelemetryClock.isValid()) { return; }
     DeviceState next = m_state;
 
     if (m_enabled && m_latest.isValid())
@@ -249,7 +282,18 @@ void Device::reevaluateState(bool fromTelemetry)
     // Online is a lateral move from Offline in severity terms, and this says so.
     if (next > std::max(previous, DeviceState::Normal) && next != DeviceState::Offline)
     {
-        raiseAlarm(next, describeAnomaly(m_latest), 30000);
+        QString reason = describeAnomaly(m_latest);
+        if (m_limits.evaluate(m_latest) < next)
+        {
+            const DeviceState anomalyState = m_lastAnomaly.level >= AnomalyLevel::High
+                ? DeviceState::Fault : (m_lastAnomaly.isSignificant() ? DeviceState::Warning : DeviceState::Normal);
+            reason = anomalyState == next
+                ? QStringLiteral("Anomaly [%1] %2 (score %3)")
+                      .arg(toString(m_lastAnomaly.level), m_lastAnomaly.reason).arg(m_lastAnomaly.score, 0, 'f', 2)
+                : QStringLiteral("Diagnosis [%1]: %2 (health %3)")
+                      .arg(m_prediction.backend, m_prediction.faultType).arg(m_prediction.healthScore, 0, 'f', 1);
+        }
+        raiseAlarm(next, reason, 30000);
     }
     else if (next == DeviceState::Normal)
     {
@@ -326,13 +370,13 @@ void Device::raiseAlarm(DeviceState state, const QString& message, int suppressi
     // at most one alarm per window.  Without this a device oscillating across
     // the threshold floods both the alarm table and the operator's screen.
     if (m_alarmLatched && state == m_lastAlarmedState
-        && suppressionMs > 0 && m_lastAlarmTime.isValid()
-        && m_lastAlarmTime.msecsTo(now) < suppressionMs)
+        && suppressionMs > 0 && m_lastAlarmClock.isValid()
+        && m_lastAlarmClock.elapsed() < suppressionMs)
     {
         return;
     }
 
-    m_lastAlarmTime = now;
+    m_lastAlarmClock.start();
     m_lastAlarmedState = state;
     m_alarmLatched = true;
     ++m_alarmCount;
