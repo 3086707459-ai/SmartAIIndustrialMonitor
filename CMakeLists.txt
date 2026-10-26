@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(SmartAIIndustrialMonitor
-    VERSION     1.0.0
-    DESCRIPTION "Industrial device monitoring & AI fault-diagnosis platform"
+project(MedSignalWorkbench
+    VERSION     1.1.0
+    DESCRIPTION "Medical waveform replay and reproducible PhysioNet evaluation"
     LANGUAGES   CXX)
 
 # ---------------------------------------------------------------------------
@@ -34,7 +34,7 @@ option(SAIM_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 # ---------------------------------------------------------------------------
 # Qt
 # ---------------------------------------------------------------------------
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Gui Widgets Network Sql Charts Svg)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Gui Widgets Network Sql Charts Svg Concurrent)
 
 qt_standard_project_setup()          # AUTOMOC / AUTOUIC / AUTORCC + sensible defaults
 
@@ -79,6 +79,7 @@ include(CompilerWarnings)
 # by convention.  See src/app/ApplicationController.h.
 # ---------------------------------------------------------------------------
 add_subdirectory(src/common)
+add_subdirectory(src/medical)
 add_subdirectory(src/core)
 add_subdirectory(src/device)
 add_subdirectory(src/database)
@@ -101,15 +102,15 @@ endif()
 # ---------------------------------------------------------------------------
 # Deployment helper: copy the Qt runtime next to the executable
 # ---------------------------------------------------------------------------
-if(WIN32 AND TARGET SmartAIIndustrialMonitor)
+if(WIN32 AND TARGET MedSignalWorkbench)
     find_program(SAIM_WINDEPLOYQT windeployqt HINTS "${QT6_INSTALL_PREFIX}/bin"
                  "${CMAKE_PREFIX_PATH}/bin")
     if(SAIM_WINDEPLOYQT)
         add_custom_target(deploy
             COMMAND "${SAIM_WINDEPLOYQT}" --no-translations --no-system-d3d-compiler
-                    "$<TARGET_FILE:SmartAIIndustrialMonitor>"
-            DEPENDS SmartAIIndustrialMonitor
-            COMMENT "Deploying Qt runtime next to SmartAIIndustrialMonitor.exe")
+                    "$<TARGET_FILE:MedSignalWorkbench>"
+            DEPENDS MedSignalWorkbench
+            COMMENT "Deploying Qt runtime next to MedSignalWorkbench.exe")
     endif()
 endif()
 

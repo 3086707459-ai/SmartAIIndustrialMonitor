@@ -17,6 +17,8 @@ saim_add_unit_test(test_common
     SOURCES test_common.cpp
     LIBS    saim::common
 )
+saim_add_unit_test(test_medical SOURCES test_medical.cpp LIBS saim::medical)
+target_compile_definitions(test_medical PRIVATE SAIM_MEDICAL_FIXTURE="${CMAKE_SOURCE_DIR}/datasets/bidmc-demo")
 
 # -- device: the state machine, alarms, liveness, history ---------------------
 saim_add_unit_test(test_device

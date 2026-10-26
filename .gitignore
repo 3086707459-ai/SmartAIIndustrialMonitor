@@ -41,6 +41,7 @@ models/*.onnx
 !models/.gitkeep
 
 # Python
+datasets/bidmc/
 __pycache__/
 *.pyc
 .venv/

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="12"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname=""
+	time="29"
+	timestamp="2026-10-26T20:06:37"
+	>
+	<testcase name="test_common" classname="test_common" time="0.0842203" status="run">
+		<properties/>
+		<system-out>  PASS  ring_buffer_returns_elements_in_chronological_order
+  PASS  ring_buffer_overwrites_the_oldest_when_full
+  PASS  ring_buffer_with_zero_capacity_is_well_defined
+  PASS  ring_buffer_clears
+  PASS  result_reports_success_and_carries_a_value
+  PASS  result_error_carries_a_code_and_a_message
+  PASS  status_is_a_result_void
+  PASS  limits_pass_a_sample_inside_the_envelope
+  PASS  limits_warn_between_the_warn_and_high_thresholds
+  PASS  limits_fault_at_or_above_the_high_threshold
+  PASS  limits_take_the_worst_of_every_channel
+  PASS  limits_treat_voltage_as_a_two_sided_envelope
+  PASS  feature_vector_has_the_declared_dimension
+  PASS  prediction_implies_a_state_from_its_health_score
+  PASS  a_prediction_with_no_fault_type_implies_nothing
+
+15 passed, 0 failed
+</system-out>
+	</testcase>
+	<testcase name="test_medical" classname="test_medical" time="1.19706" status="run">
+		<properties/>
+		<system-out>  PASS  original_bidmc_record_has_publisher_hashes_and_exact_timeline
+  PASS  real_missing_monitor_values_stay_missing
+  PASS  manual_annotations_use_one_based_samples_and_separate_streams
+  PASS  baseline_estimates_are_independent_of_reference_annotations
+  PASS  missing_and_flat_resp_windows_abstain_instead_of_guessing
+  PASS  import_rejects_broken_time_axis_without_partial_record
+  PASS  import_rejects_malformed_fields_instead_of_coercing_to_zero
+  PASS  import_requires_all_three_files_and_safe_record_identifier
+  PASS  import_rejects_modified_but_well_formed_source_by_publisher_hash
+
+9 passed, 0 failed
+</system-out>
+	</testcase>
+	<testcase name="test_device" classname="test_device" time="0.138224" status="run">
+		<properties/>
+		<system-out>  PASS  a_new_device_is_offline_with_no_data
+  PASS  a_normal_sample_brings_an_offline_device_online
+  PASS  status_changes_are_emitted_only_on_a_transition
+  PASS  a_warning_sample_moves_the_device_to_warning
+  PASS  a_fault_sample_moves_the_device_to_fault
+  PASS  a_device_recovers_when_the_values_return_to_normal
+  PASS  an_alarm_is_raised_on_entering_a_warning_state
+  PASS  a_device_stuck_in_warning_does_not_repeat_its_alarm
+  PASS  escalating_from_warning_to_fault_raises_a_second_alarm
+  PASS  acknowledging_clears_the_latch_and_allows_a_new_alarm
+  PASS  a_device_goes_offline_after_the_timeout
+  PASS  a_freshly_seen_device_stays_online
+  PASS  history_keeps_the_most_recent_samples_and_bounds_memory
+  PASS  statistics_summarise_the_retained_window
+  PASS  a_prediction_with_poor_health_escalates_the_state
+  PASS  a_verdict_does_not_resurrect_an_offline_device
+  PASS  statistics_count_matches_the_retained_window
+  PASS  late_analysis_cannot_revive_a_timed_out_device
+  PASS  disabled_devices_reject_diagnosti...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="test_ai" classname="test_ai" time="0.0927858" status="run">
+		<properties/>
+		<system-out>  PASS  feature_statistics_match_constant_signal
+  PASS  trend_uses_elapsed_time_with_irregular_sampling
+  PASS  short_windows_do_not_claim_healthy_predictions
+  PASS  fallback_labels_its_backend_and_degrades_for_overheating
+  PASS  anomaly_baselines_are_isolated_and_do_not_learn_spikes
+
+5 passed, 0 failed
+</system-out>
+	</testcase>
+	<testcase name="test_protocol" classname="test_protocol" time="0.114451" status="run">
+		<properties/>
+		<system-out>  PASS  every_possible_split_preserves_one_frame
+  PASS  coalesced_valid_frames_can_exceed_single_frame_limit
+  PASS  resynchronisation_preserves_split_magic_byte
+  PASS  malformed_frames_do_not_poison_following_frames
+  PASS  telemetry_rejects_missing_and_non_numeric_measurements
+  PASS  reset_discards_a_partial_connection_frame
+
+6 passed, 0 failed
+</system-out>
+	</testcase>
+	<testcase name="test_database" classname="test_database" time="0.346882" status="run">
+		<properties/>
+		<system-out>  PASS  schema_reopens_without_losing_history
+  PASS  batch_spans_sql_parameter_chunks_and_filters_history
+  PASS  foreign_key_failure_rolls_back_all_chunks
+  PASS  closed_database_reports_write_failure
+
+4 passed, 0 failed
+</system-out>
+	</testcase>
+	<testcase name="test_thread" classname="test_thread" time="0.314859" status="run">
+		<properties/>
+		<system-out>  PASS  worker_timers_and_blocking_calls_survive_restart
+  PASS  worker_can_request_its_own_stop_without_self_join
+  PASS  pool_releases_all_owned_workers
+  PASS  persistence_keeps_ingestion_state_across_threshold_updates
+  PASS  ai_uses_copied_limits_and_forgets_removed_devices
+  PASS  typed_configuration_reads_are_independent_snapshots
+  PASS  report_generation_owns_its_input_snapshot
+
+7 passed, 0 failed
+</system-out>
+	</testcase>
+	<testcase name="test_backpressure" classname="test_backpressure" time="15.7245" status="run">
+		<properties/>
+		<system-out>  PASS  full_storage_queue_rejects_with_deadline_and_preserves_fifo
+  PASS  waiting_producer_is_woken_by_consumer_and_close
+  PASS  ai_overflow_keeps_newest_samples_and_ui_coalesces_per_device
+  PASS  concurrent_delivery_preserves_order_without_unbounded_events
+  PASS  result_and_record_channels_are_bounded
+  PASS  storage_drains_full_mailbox_and_restarts_without_stale_samples
+  PASS  locked_database_shutdown_counts_loss_without_retrying_every_batch
+  PASS  fresh_database_stays_in_explicit_data_root
+
+8 passed, 0 failed
+</system-out>
+	</testcase>
+	<testcase name="test_pipeline" classname="test_pipeline" time="5.23558" status="run">
+		<properties/>
+		<system-out>  PASS  config_is_read_from_the_search_path
+  PASS  an_environment_override_beats_the_file
+  PASS  the_device_registry_reconciles_rather_than_rebuilds
+  PASS  samples_travel_from_the_gateway_to_the_registry
+  PASS  the_device_moves_into_normal_once_telemetry_arrives
+  PASS  the_prediction_backend_is_honest_about_which_model_answered
+  PASS  analysis_runs_on_the_live_stream_and_produces_a_verdict
+  PASS  the_database_is_created_migrated_and_written
+  PASS  shutdown_is_clean_and_idempotent
+  PASS  a_second_controller_can_reuse_the_same_port
+  PASS  live_configuration_updates_states_and_registers_new_devices
+  PASS  controller_applies_complete_analysis_without_reviving_offline_devices
+
+12 passed, 0 failed
+</system-out>
+	</testcase>
+	<testcase name="test_ui_smoke" classname="test_ui_smoke" time="1.87078" status="run">
+		<properties/>
+		<system-out>  PASS  window_renders_live_telemetry_and_releases_on_shutdown
+
+1 passed, 0 failed
+</system-out>
+	</testcase>
+	<testcase name="test_medical_ui" classname="test_medical_ui" time="0.64363" status="run">
+		<properties/>
+		<system-out>  PASS  real_medical_waveforms_annotations_and_missing_numerics_render
+  PASS  empty_import_clears_previous_record_and_stops_playback
+
+2 passed, 0 failed
+</system-out>
+	</testcase>
+	<testcase name="test_overload" classname="test_overload" time="3.69965" status="run">
+		<properties/>
+		<system-out>  PASS  real_tcp_sql_lock_rejects_explicitly_and_preserves_accounting
+  PASS  stalled_model_thread_does_not_accumulate_sample_events
+  PASS  slow_tcp_client_disconnect_does_not_invalidate_other_clients
+
+3 passed, 0 failed
+</system-out>
+	</testcase>
+</testsuite>

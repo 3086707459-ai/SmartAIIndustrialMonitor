@@ -69,10 +69,10 @@ function Invoke-IsolatedProcess([string]$Name, [string]$Arguments, [string]$LogN
 }
 
 # The shipped entry point must load its dependencies and command parser, too.
-Invoke-IsolatedProcess 'SmartAIIndustrialMonitor.exe' '--version' 'application'
+Invoke-IsolatedProcess 'MedSignalWorkbench.exe' '--version' 'application'
 Invoke-IsolatedProcess 'saim_deployment_probe.exe' ('--evidence-dir "' + $evidence + '"') 'probe'
 $result = Get-Content -LiteralPath (Join-Path $evidence 'probe-result.json') -Raw | ConvertFrom-Json
-if (-not $result.ok -or $result.platform -ne 'windows' -or -not $result.databaseIntegrity -or -not $result.guiVisible -or -not $result.svgRendered -or $result.chartPoints -lt 3 -or $result.sensorRows -lt 30) {
+if (-not $result.ok -or $result.platform -ne 'windows' -or -not $result.guiVisible -or -not $result.svgRendered -or -not $result.missingValuePreserved -or $result.chartPoints -ne 3753 -or $result.waveformRows -ne 60001 -or $result.numericRows -ne 481) {
     throw "Deployment probe did not meet acceptance conditions: $evidence"
 }
 $runtimePrefix = $runRoot.TrimEnd('\') + '\'
@@ -82,7 +82,7 @@ foreach ($module in $runtimeModules) {
     $modulePath = [System.IO.Path]::GetFullPath($module)
     if (-not $modulePath.StartsWith($runtimePrefix, [StringComparison]::OrdinalIgnoreCase)) { throw "Dependency escaped package: $module" }
 }
-foreach ($required in @('qwindows.dll', 'qsqlite.dll', 'Qt6Charts.dll', 'Qt6Svg.dll')) {
+foreach ($required in @('qwindows.dll', 'Qt6Charts.dll', 'Qt6Svg.dll', 'Qt6Core.dll')) {
     if (-not @($runtimeModules | Where-Object { [System.IO.Path]::GetFileName($_) -eq $required }).Count) { throw "Required module was not loaded: $required" }
 }
 $sandboxPath = Join-Path $env:SystemRoot 'System32/WindowsSandbox.exe'
@@ -97,13 +97,15 @@ $acceptance = @{
     windowsSandboxExecutablePresent = (Test-Path -LiteralPath $sandboxPath)
     manifestFiles = @($manifest.files).Count
     nativePlatform = $result.platform
-    sensorRows = $result.sensorRows
+    waveformRows = $result.waveformRows
+    numericRows = $result.numericRows
+    missingValuePreserved = $result.missingValuePreserved
     chartPoints = $result.chartPoints
     runtimeModules = $runtimeModules
     path = "$env:SystemRoot\System32;$env:SystemRoot;$env:SystemRoot\System32\Wbem"
 }
 $acceptance | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $evidence 'acceptance-result.json') -Encoding utf8
-Write-Output "PASS: packaged GUI, loopback TCP, inference, SQLite integrity, Charts/SVG and app-local DLLs"
+Write-Output "PASS: medical GUI, publisher-hashed BIDMC record, missing numerics, respiratory evaluation, Charts/SVG and app-local DLLs"
 Write-Output "Evidence: $evidence"
 Write-Output "Temporary runtime retained: $runRoot"
 Write-Output 'Scope: developer-machine process isolation. A clean Windows VM/Sandbox must be tested separately.'

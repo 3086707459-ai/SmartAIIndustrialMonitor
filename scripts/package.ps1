@@ -12,7 +12,7 @@ $compilerDirectory = (Resolve-Path -LiteralPath $CompilerBin).Path
 $deployTool = Join-Path $qtDirectory 'bin/windeployqt.exe'
 if (-not (Test-Path -LiteralPath $deployTool)) { throw "Missing deployment tool: $deployTool" }
 if (-not $OutputDirectory) {
-    $OutputDirectory = Join-Path $projectRoot ('build/packages/SAIM-demo-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
+    $OutputDirectory = Join-Path $projectRoot ('build/packages/MedSignal-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
 }
 $destination = [System.IO.Path]::GetFullPath($OutputDirectory)
 if (Test-Path -LiteralPath $destination) { throw "Refusing to overwrite an existing package: $destination" }
@@ -26,7 +26,7 @@ try {
         if (-not $SkipBuild) {
             & cmake --preset demo
             if ($LASTEXITCODE -ne 0) { throw 'CMake configuration failed' }
-            & cmake --build --preset demo --target SmartAIIndustrialMonitor saim_deployment_probe
+            & cmake --build --preset demo --target MedSignalWorkbench bidmc_benchmark saim_deployment_probe
             if ($LASTEXITCODE -ne 0) { throw 'Package build failed' }
         }
         $cachePath = Join-Path $projectRoot 'build/demo/CMakeCache.txt'
@@ -36,22 +36,31 @@ try {
         }
         if ($cache -notmatch '(?m)^CMAKE_BUILD_TYPE:STRING=Release\r?$') { throw 'Demo package requires a Release build' }
         New-Item -ItemType Directory -Path $destination | Out-Null
-        foreach ($name in @('SmartAIIndustrialMonitor.exe', 'saim_deployment_probe.exe')) {
+        foreach ($name in @('MedSignalWorkbench.exe', 'bidmc_benchmark.exe', 'saim_deployment_probe.exe')) {
             Copy-Item -LiteralPath (Join-Path $projectRoot "build/demo/bin/$name") -Destination $destination
         }
-        & $deployTool --release --compiler-runtime --no-translations --no-system-d3d-compiler --dir $destination (Join-Path $destination 'SmartAIIndustrialMonitor.exe') (Join-Path $destination 'saim_deployment_probe.exe')
+        & $deployTool --release --compiler-runtime --no-translations --no-system-d3d-compiler --dir $destination (Join-Path $destination 'MedSignalWorkbench.exe') (Join-Path $destination 'bidmc_benchmark.exe') (Join-Path $destination 'saim_deployment_probe.exe')
         if ($LASTEXITCODE -ne 0) { throw 'windeployqt failed' }
         # Explicit app-local paths also override Qt's compiled-in SDK prefix.
         "[Paths]`nPrefix=.`nPlugins=.`nLibraries=.`n" | Set-Content -LiteralPath (Join-Path $destination 'qt.conf') -Encoding ascii
-        Copy-Item -LiteralPath (Join-Path $projectRoot 'config') -Destination $destination -Recurse
+        New-Item -ItemType Directory -Path (Join-Path $destination 'datasets') | Out-Null
+        Copy-Item -LiteralPath (Join-Path $projectRoot 'datasets/bidmc-demo') -Destination (Join-Path $destination 'datasets') -Recurse
+        Copy-Item -LiteralPath (Join-Path $projectRoot 'datasets/README.md') -Destination (Join-Path $destination 'datasets')
+        Copy-Item -LiteralPath (Join-Path $projectRoot 'datasets/SHA256SUMS-bidmc-1.0.0.txt') -Destination (Join-Path $destination 'datasets')
+        Copy-Item -LiteralPath (Join-Path $projectRoot 'docs/package-readme.md') -Destination (Join-Path $destination 'README.md')
+        New-Item -ItemType Directory -Path (Join-Path $destination 'docs/acceptance') -Force | Out-Null
+        Copy-Item -LiteralPath (Join-Path $projectRoot 'docs/medical-validation.md') -Destination (Join-Path $destination 'docs')
+        foreach ($evidenceName in @('bidmc-20261026.json', 'medical-20261026-run-info.json', 'regression-20261026.xml')) {
+            Copy-Item -LiteralPath (Join-Path $projectRoot "docs/acceptance/$evidenceName") -Destination (Join-Path $destination 'docs/acceptance')
+        }
         New-Item -ItemType Directory -Path (Join-Path $destination 'acceptance') | Out-Null
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'verify-package.ps1') -Destination (Join-Path $destination 'acceptance')
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'verify-in-sandbox.ps1') -Destination (Join-Path $destination 'acceptance')
         @{
             schemaVersion = 1
-            product = 'SmartAIIndustrialMonitor'
+            product = 'MedSignalWorkbench'
             buildType = 'Release'
-            profile = 'demo: built-in simulator + heuristic predictor; ONNX and OpenCV disabled'
+            profile = 'medical replay: original BIDMC record 01 + fixed RESP baseline; no clinical model'
             qtVersion = (& (Join-Path $qtDirectory 'bin/qmake.exe') -query QT_VERSION)
             builtAtUtc = [DateTime]::UtcNow.ToString('o')
         } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $destination 'package-info.json') -Encoding utf8

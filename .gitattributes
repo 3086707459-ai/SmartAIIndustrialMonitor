@@ -11,3 +11,7 @@
 *.py text eol=lf
 *.png binary
 *.ico binary
+# Original publisher bytes must survive Windows checkout unchanged.
+datasets/bidmc-demo/*.csv -text
+datasets/bidmc-demo/LICENSE -text
+datasets/SHA256SUMS-bidmc-1.0.0.txt -text

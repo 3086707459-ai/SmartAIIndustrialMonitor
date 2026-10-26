@@ -42,6 +42,8 @@ saim_add_unit_test(test_ui_smoke
     LIBS saim::app Qt6::Widgets
 )
 set_tests_properties(test_ui_smoke PROPERTIES TIMEOUT 30)
+saim_add_unit_test(test_medical_ui SOURCES test_medical_ui.cpp LIBS saim::medical_ui)
+target_compile_definitions(test_medical_ui PRIVATE SAIM_MEDICAL_FIXTURE="${CMAKE_SOURCE_DIR}/datasets/bidmc-demo")
 
 saim_add_unit_test(test_overload
     SOURCES test_overload.cpp

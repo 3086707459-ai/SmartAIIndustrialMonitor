@@ -1,0 +1,29 @@
+{
+  "evaluated_at_utc": "2026-10-26T12:10:51.709Z",
+  "command": "bidmc_benchmark.exe --data datasets/bidmc --require-records 53 --output build/acceptance/bidmc-20261026.json",
+  "base_commit": "e20298d81f3aec8bf6ca6fac43fb903c7eaa95d9",
+  "source_hashes": {
+    "src/medical/BIDMCRecord.h": "a9e538307753899f8605a16bd52e4e00baa7460923e59054e73564d94f38a843",
+    "src/medical/BIDMCRecord.cpp": "b2d9d37cf674e1aa70e4ee91bbbf9ded3c5741df9dd798d0dccca36a9e67f6ef",
+    "src/medical/RespiratoryAnalysis.h": "c466b17c70ff1f1f374122461462e4f6d44c979b25bad0b2038148e73166bd45",
+    "src/medical/RespiratoryAnalysis.cpp": "618d7ee7064cfc9f9f3eb05a801709e7adad8b21a6f7a1d72ee6cd0b5a380639",
+    "src/medical/MedicalWindow.h": "465c8be1de576c2670b94bc950241a0e60e4892df58b25e914c73dcdd437e16e",
+    "src/medical/MedicalWindow.cpp": "071073cd5360030ee2a56e1f7d188045b79bb31ff8904e57952bc9cd0d8548e8",
+    "apps/medical/benchmark.cpp": "ec30405b958f6cce26ecdbdfd5297a707d5f3264b850e870efc100d43d602a1c",
+    "scripts/fetch_bidmc.py": "232bb765727c75fd9d68aac4596bde9a7f26e594060a208664fe50113167de37",
+    "datasets/SHA256SUMS-bidmc-1.0.0.txt": "e28756681318a18d9c682a68cdff65efcaccb3ece40cfccd380540b77a3fdd6d"
+  },
+  "binary_sha256": "f6a415f455f4dc63d21c132a2ab83ffdf7fccef021efdca09150d0dabb90a423",
+  "report_sha256": "15e793525652399de171778a88f1147bcc2d22fa28c1faa2436005be3f055f96",
+  "configuration": {
+    "build": "Release",
+    "warnings_as_errors": true,
+    "qt": "6.8.3",
+    "compiler": "MinGW 13.1.0",
+    "onnx": false,
+    "opencv": false
+  },
+  "dataset_records": 53,
+  "original_files": 159,
+  "download_manifest_sha256": "2ef399490171f176ec18aee85ff65b450d80b491db36e3447d4cc494fc778304"
+}

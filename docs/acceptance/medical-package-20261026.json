@@ -1,0 +1,31 @@
+{
+  "operatingSystem": "Microsoft Windows NT 10.0.19045.0",
+  "missingValuePreserved": true,
+  "waveformRows": 60001,
+  "windowsSandboxExecutablePresent": false,
+  "chartPoints": 3753,
+  "testedAtUtc": "2026-10-26T12:15:13.4870607Z",
+  "ok": true,
+  "manifestFiles": 47,
+  "nativePlatform": "windows",
+  "numericRows": 481,
+  "schemaVersion": 1,
+  "verification": "local process isolation; not a clean VM certification",
+  "archive": "build/packages/MedSignal-20261026-final.zip",
+  "archive_sha256": "81b539658153ff2f5bc6077a010f6a933868c4f3c5ca353b1e1eddbebc9fb2e7",
+  "runtime_module_names": [
+    "Qt6Charts.dll",
+    "Qt6Gui.dll",
+    "Qt6Core.dll",
+    "Qt6Widgets.dll",
+    "libgcc_s_seh-1.dll",
+    "libstdc++-6.dll",
+    "Qt6OpenGL.dll",
+    "Qt6OpenGLWidgets.dll",
+    "libwinpthread-1.dll",
+    "Qt6Svg.dll",
+    "qwindows.dll",
+    "qsvgicon.dll",
+    "qsvg.dll"
+  ]
+}
