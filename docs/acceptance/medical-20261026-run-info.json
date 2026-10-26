@@ -25,5 +25,18 @@
   },
   "dataset_records": 53,
   "original_files": 159,
-  "download_manifest_sha256": "2ef399490171f176ec18aee85ff65b450d80b491db36e3447d4cc494fc778304"
+  "download_manifest_sha256": "2ef399490171f176ec18aee85ff65b450d80b491db36e3447d4cc494fc778304",
+  "implementation_commit": "bafb0465fa64b7fe25b50538b7e0cd7c0572d566",
+  "source_hashes_note": "SHA-256 of local build input bytes before Git text line-ending normalization; committed source identity is also recorded as Git blob object IDs.",
+  "git_blob_oids": {
+    "src/medical/BIDMCRecord.h": "391008f32ad37da688548daa013ef3f6cb0c0713",
+    "src/medical/BIDMCRecord.cpp": "86aae3d700c85006deb6dc1b39996fd4f9804820",
+    "src/medical/RespiratoryAnalysis.h": "8d811ea895aa6ec53b8bd27e6a95618c9623c79e",
+    "src/medical/RespiratoryAnalysis.cpp": "4f206ba249578cb8f51662f8237710323ce2767c",
+    "src/medical/MedicalWindow.h": "30f837f16aa35dd9a7cc64eaeefd3e9a48d62611",
+    "src/medical/MedicalWindow.cpp": "c8391a694bf5156b1cbbef1d7d09b682befd1640",
+    "apps/medical/benchmark.cpp": "38e1902cd6ffbb28e351571529b0e2553e541bbd",
+    "scripts/fetch_bidmc.py": "21107a023d5e2b4ce05fbbc24a47ff75ba772961",
+    "datasets/SHA256SUMS-bidmc-1.0.0.txt": "dafe68516dfd7a725bfb6fb248c6366de6236fdf"
+  }
 }
