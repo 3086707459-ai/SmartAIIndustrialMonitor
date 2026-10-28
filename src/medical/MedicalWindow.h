@@ -1,5 +1,5 @@
 #pragma once
-#include "medical/RespiratoryAnalysis.h"
+#include "medical/MedicalDocument.h"
 #include <QElapsedTimer>
 #include <QFutureWatcher>
 #include <QMainWindow>
@@ -13,6 +13,8 @@ class QTimer;
 class QLineSeries;
 class QScatterSeries;
 class QValueAxis;
+class QTableWidget;
+class QTabWidget;
 
 namespace saim::medical {
 class MedicalWindow : public QMainWindow
@@ -23,11 +25,13 @@ public:
     void openDirectory(const QString& directory);
     void seek(double seconds);
     void setPlaying(bool playing);
+    void reviewWindow(int row);
     [[nodiscard]] const BIDMCRecord* record() const { return m_record ? &*m_record : nullptr; }
     [[nodiscard]] double position() const { return m_position; }
     [[nodiscard]] bool isPlaying() const { return m_playing; }
-    [[nodiscard]] bool isLoading() const { return m_loader.isRunning(); }
+    [[nodiscard]] bool isLoading() const { return m_loading; }
     [[nodiscard]] QString reportJson() const;
+    [[nodiscard]] QString reportCsv() const;
 signals:
     void recordLoaded(const QString& id);
     void importFailed(const QString& message);
@@ -36,10 +40,13 @@ private:
     void render();
     void exportReport();
     void tick();
+    void clearDocument();
+    void populateReview();
+    void filterReview();
     QString m_directory;
     std::optional<BIDMCRecord> m_record;
     QJsonObject m_report;
-    QFutureWatcher<Result<BIDMCRecord>> m_loader;
+    QFutureWatcher<Result<MedicalDocument>> m_loader;
     QComboBox* m_records = nullptr;
     QComboBox* m_speed = nullptr;
     QPushButton* m_open = nullptr;
@@ -50,6 +57,11 @@ private:
     QLabel* m_status = nullptr;
     QLabel* m_time = nullptr;
     QLabel* m_analysis = nullptr;
+    QTableWidget* m_review = nullptr;
+    QTabWidget* m_tabs = nullptr;
+    QComboBox* m_reviewFilter = nullptr;
+    QComboBox* m_span = nullptr;
+    std::optional<std::pair<double, double>> m_reviewRange;
     std::array<QLabel*, 4> m_values{};
     std::array<QLineSeries*, 3> m_lines{};
     std::array<QValueAxis*, 3> m_timeAxes{};
@@ -61,5 +73,6 @@ private:
     double m_anchor = 0.0;
     double m_rate = 1.0;
     bool m_playing = false;
+    bool m_loading = false; // remains true until the completed value is published
 };
 } // namespace saim::medical

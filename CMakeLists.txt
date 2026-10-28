@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
 project(MedSignalWorkbench
-    VERSION     1.1.0
+    VERSION     1.2.0
     DESCRIPTION "Medical waveform replay and reproducible PhysioNet evaluation"
     LANGUAGES   CXX)
 

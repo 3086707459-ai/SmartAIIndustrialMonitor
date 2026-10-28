@@ -13,6 +13,9 @@
 #include <QSvgRenderer>
 #include <QThread>
 #include <QTextStream>
+#include <QTableWidget>
+#include <QComboBox>
+#include <QTabWidget>
 #include <algorithm>
 #include <stdexcept>
 
@@ -87,6 +90,16 @@ int main(int argc, char** argv)
         require(evaluation.open(QIODevice::WriteOnly), "Cannot write evaluation evidence");
         const auto json = window.reportJson().toUtf8();
         require(evaluation.write(json) == json.size(), "Cannot save evaluation evidence");
+        require(saim::medical::saveEvaluationReport(report, evidence.filePath(QStringLiteral("bidmc-demo-evaluation.csv")),
+            saim::medical::EvaluationFormat::Csv).isOk(), "Cannot save packaged CSV evaluation");
+        auto* review = window.findChild<QTableWidget*>(QStringLiteral("WindowReview"));
+        require(review && review->rowCount() == 16, "Window review table is incomplete");
+        window.reviewWindow(1);
+        const auto* reviewedLine = qobject_cast<QLineSeries*>(views[0]->chart()->series().first());
+        require(reviewedLine && reviewedLine->count() == 3750 && reviewedLine->at(0).x() == 30.0,
+            "Review navigation did not preserve the complete half-open interval");
+        window.findChild<QComboBox*>(QStringLiteral("WaveformSpan"))->setCurrentIndex(0);
+        window.seek(30.0);
         QSvgRenderer svg(QStringLiteral(":/icons/medsignal.svg"));
         require(svg.isValid(), "Packaged medical SVG asset unavailable");
         QImage icon(64, 64, QImage::Format_ARGB32); icon.fill(Qt::transparent);
@@ -94,6 +107,18 @@ int main(int argc, char** argv)
         require(icon.pixelColor(32, 32).alpha() > 0, "SVG rendering failed");
         QApplication::processEvents();
         require(window.grab().save(evidence.filePath(QStringLiteral("native-window.png"))), "Cannot capture native medical window");
+        auto* selector = window.findChild<QComboBox*>(QStringLiteral("RecordSelector"));
+        require(selector && selector->count() == 2, "Packaged difficult record 05 is missing");
+        selector->setCurrentIndex(1);
+        deadline.restart();
+        while (window.record() == nullptr && deadline.elapsed() < 10000)
+        { QApplication::processEvents(); QThread::msleep(5); }
+        require(window.record() && window.record()->id == QStringLiteral("05"), "Difficult record did not load");
+        const auto difficult = QJsonDocument::fromJson(window.reportJson().toUtf8()).object();
+        require(difficult.value("accepted_windows").toInt() == 2 && review->rowCount() == 16, "Difficult windows were hidden or incorrectly scored");
+        window.findChild<QTabWidget*>(QStringLiteral("MedicalTabs"))->setCurrentIndex(1);
+        QApplication::processEvents();
+        require(window.grab().save(evidence.filePath(QStringLiteral("native-review.png"))), "Cannot capture window review");
         result.insert(QStringLiteral("ok"), true);
         result.insert(QStringLiteral("guiVisible"), window.isVisible());
         result.insert(QStringLiteral("svgRendered"), true);
@@ -101,6 +126,10 @@ int main(int argc, char** argv)
         result.insert(QStringLiteral("waveformRows"), window.record()->waveforms.size());
         result.insert(QStringLiteral("numericRows"), window.record()->numerics.size());
         result.insert(QStringLiteral("chartPoints"), points);
+        result.insert(QStringLiteral("reviewRows"), review->rowCount());
+        result.insert(QStringLiteral("reviewNavigationPassed"), true);
+        result.insert(QStringLiteral("csvExportPassed"), true);
+        result.insert(QStringLiteral("difficultAcceptedWindows"), difficult.value("accepted_windows").toInt());
         result.insert(QStringLiteral("loadedModules"), modules());
         exitCode = 0;
     }

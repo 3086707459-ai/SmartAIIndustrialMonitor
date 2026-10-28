@@ -41,7 +41,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Regression tests failed' }
     & python (Join-Path $PSScriptRoot 'fetch_bidmc.py') --all --mirror
     if ($LASTEXITCODE -ne 0) { throw 'BIDMC publisher-hash verification failed' }
-    & ./build/demo/bin/bidmc_benchmark.exe --data datasets/bidmc --require-records 53 --output (Join-Path $evidence 'bidmc-full.json')
+    & ./build/demo/bin/bidmc_benchmark.exe --data datasets/bidmc --require-records 53 --output (Join-Path $evidence 'bidmc-full.json') --csv (Join-Path $evidence 'bidmc-windows.csv')
     if ($LASTEXITCODE -ne 0) { throw 'Full real-data evaluation failed' }
     & (Join-Path $PSScriptRoot 'stress.ps1') -QtRoot $qtPath -CompilerBin $compilerPath -DurationSeconds $StressSeconds -OutputDirectory (Join-Path $evidence 'stress') -SkipBuild
     & (Join-Path $PSScriptRoot 'package.ps1') -QtRoot $qtPath -CompilerBin $compilerPath -OutputDirectory (Join-Path $projectRoot 'build/packages/ci') -SkipBuild

@@ -1,5 +1,5 @@
 saim_add_library(saim_medical
-    SOURCES BIDMCRecord.h BIDMCRecord.cpp RespiratoryAnalysis.h RespiratoryAnalysis.cpp
+    SOURCES BIDMCRecord.h BIDMCRecord.cpp RespiratoryAnalysis.h RespiratoryAnalysis.cpp MedicalDocument.h MedicalDocument.cpp
     LIBS saim::common Qt6::Core
 )
 qt_add_resources(saim_medical "bidmc_provenance"

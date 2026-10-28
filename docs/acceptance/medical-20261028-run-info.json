@@ -1,0 +1,53 @@
+{
+  "evaluated_at_utc": "2026-10-28T04:30:22.467Z",
+  "version": "1.2.0",
+  "implementation_base_commit": "a9aee973abc43520f68ee1a957793190f0a42fca",
+  "source_hash_note": "SHA-256 normalizes CRLF to LF for source text; Git blob IDs include the repository attributes applied to the exact source paths.",
+  "source_lf_sha256": {
+    "src/medical/BIDMCRecord.h": "a9e538307753899f8605a16bd52e4e00baa7460923e59054e73564d94f38a843",
+    "src/medical/BIDMCRecord.cpp": "4dbf8c83781886e2c81820f35eb07ea524cba30eb521751c51f8d38fa8fb57ee",
+    "src/medical/RespiratoryAnalysis.h": "1846bfd7b43d20498f3181a1f8f276e732f0425ade26f8adab7b72fa3843a3f0",
+    "src/medical/RespiratoryAnalysis.cpp": "665e27a98b200c7c51fde43ff17fad99dfc859db681ced21e47b0215fe644d85",
+    "src/medical/MedicalDocument.h": "5783501b8a2547b170aab6608daa304f33b8c03133f2165730fe0515e34f7a50",
+    "src/medical/MedicalDocument.cpp": "95177e94cc4f050e3077f651d404808c7ae5cf5ff2af981a592d118a7904f570",
+    "src/medical/MedicalWindow.h": "e6850aa6fb43adf4fb0a0142a3f13bae67beb6e31793c1941b3f2205069e80a2",
+    "src/medical/MedicalWindow.cpp": "530bf8062ecff73b2971843614a81f9cc19f38e10bd3dbce2bcb20d33cbbae07",
+    "src/medical/CMakeLists.txt": "ecaa227c81211a30611513a6be5de7217a36371c1e9177f4e1fe85f74713e0e2",
+    "apps/medical/main.cpp": "8240529b143e3971be0e0815a5ba89ed3af87105c69331e8e39ee0df00b1fc4a",
+    "apps/medical/benchmark.cpp": "1536d4dc863c549327da8830723303c8f17b3fe343894f7fccf4fbf8e273ecb3",
+    "tests/deployment/medical_probe.cpp": "922ac7536032752ec8d1e8648b12096cda78599796dd6adf8b4006c0ab2284e4"
+  },
+  "source_git_blob_oids": {
+    "src/medical/BIDMCRecord.h": "391008f32ad37da688548daa013ef3f6cb0c0713",
+    "src/medical/BIDMCRecord.cpp": "86aae3d700c85006deb6dc1b39996fd4f9804820",
+    "src/medical/RespiratoryAnalysis.h": "d76c1f7e468de0685c4d9e65993e74505986d28e",
+    "src/medical/RespiratoryAnalysis.cpp": "46be7eb9fd973a9c2eb073a935479809dbd49c93",
+    "src/medical/MedicalDocument.h": "70f85dca20618aa17c8fc2a1483a8c4d8f902e14",
+    "src/medical/MedicalDocument.cpp": "b2e0471bb0468250231fc4881174ad7983ada6da",
+    "src/medical/MedicalWindow.h": "bb7e97c40df2706cfefe277307e1450512a663fa",
+    "src/medical/MedicalWindow.cpp": "f1aed39d780da359778e057bd9d98ffafcfe18f4",
+    "src/medical/CMakeLists.txt": "65d9ab1cd2a15823ccf42ccd326e070a1452f615",
+    "apps/medical/main.cpp": "4824698fe04097a8b638d7978b71fa793de82862",
+    "apps/medical/benchmark.cpp": "1fded2238aa5289ab639055ceaf29eb2d0998564",
+    "tests/deployment/medical_probe.cpp": "bbddb87bb61267abecd9d49b72798a340f9f1861"
+  },
+  "binary_sha256": {
+    "MedSignalWorkbench": "6448f439c8c59cb6ca6581eff1693db8065a5a9b814ce0f3d38a7665389fa135",
+    "bidmc_benchmark": "1c13046f7214fcf6ee066e2322795119455b9a643d51a34935bf8a4e4a777845",
+    "saim_deployment_probe": "a6de74fa809cdb36411a346da929d4af1f71e136abf3ccf2d1d2d89b186e03c2"
+  },
+  "report_sha256": "3381aa4e3e8d5a26c8927a0290468ca6fc77492fb68521df5f9a7bf1a6357350",
+  "csv_sha256": "89ed1f9b8059aa16d3545769d263e289e47956ffbfc8bbda905369c19acd06d2",
+  "command": "bidmc_benchmark.exe --data datasets/bidmc --require-records 53 --output build/acceptance/bidmc-20261028.json --csv build/acceptance/bidmc-windows-20261028.csv",
+  "comparison_to_20261026": {
+    "all_848_window_errors_identical": true,
+    "micro_mae_identical": true,
+    "coverage_identical": true
+  },
+  "configuration": {
+    "build": "Release",
+    "qt": "6.8.3",
+    "compiler": "MinGW 13.1.0",
+    "warnings_as_errors": true
+  }
+}

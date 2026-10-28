@@ -23,7 +23,7 @@ void estimate(const BIDMCRecord& record, qsizetype first, RespiratoryWindow& win
         for (int j = 0; j < kDecimation; ++j)
         {
             const double value = record.waveforms[first + i + j].values[2];
-            if (!std::isfinite(value)) { window.rejection = QStringLiteral("missing RESP waveform"); return; }
+            if (!std::isfinite(value)) { window.signalRejection = QStringLiteral("missing RESP waveform"); return; }
             sum += value;
         }
         values.push_back(sum / kDecimation);
@@ -31,7 +31,7 @@ void estimate(const BIDMCRecord& record, qsizetype first, RespiratoryWindow& win
     const double mean = std::accumulate(values.begin(), values.end(), 0.0) / static_cast<double>(values.size());
     for (auto& value : values) { value -= mean; }
     const double energy = std::inner_product(values.begin(), values.end(), values.begin(), 0.0);
-    if (energy < 1e-12) { window.rejection = QStringLiteral("flat RESP waveform"); return; }
+    if (energy < 1e-12) { window.signalRejection = QStringLiteral("flat RESP waveform"); return; }
     std::array<double, kMaxLag + 2> correlations{};
     for (int lag = kMinLag - 1; lag <= kMaxLag + 1; ++lag)
     {
@@ -51,7 +51,7 @@ void estimate(const BIDMCRecord& record, qsizetype first, RespiratoryWindow& win
         { best = std::max(best, correlations[i]); }
     }
     window.periodicity = best;
-    if (best < 0.5) { window.rejection = QStringLiteral("insufficient periodicity"); return; }
+    if (best < 0.5) { window.signalRejection = QStringLiteral("insufficient periodicity"); return; }
     for (int lag = kMinLag; lag <= kMaxLag; ++lag)
     {
         const auto i = static_cast<std::size_t>(lag);
@@ -75,12 +75,17 @@ QVector<RespiratoryWindow> analyseRespiration(const BIDMCRecord& record)
         window.start = static_cast<double>(first) / kSampleRate;
         window.end = window.start + 30.0;
         estimate(record, first, window);
+        if (record.breaths[0].isEmpty() || record.breaths[1].isEmpty())
+        {
+            window.referenceValid = false;
+            window.referenceRejection = QStringLiteral("manual annotations unavailable");
+        }
         for (double time : record.ambiguousAnnotationTimes)
         {
             if (time >= window.start && time < window.end)
             {
                 window.referenceValid = false;
-                window.rejection = QStringLiteral("duplicate manual breath annotation in reference window");
+                window.referenceRejection = QStringLiteral("duplicate manual breath annotation in reference window");
             }
         }
         for (std::size_t i = 0; i < record.breaths.size(); ++i)
@@ -89,6 +94,12 @@ QVector<RespiratoryWindow> analyseRespiration(const BIDMCRecord& record)
             const auto begin = std::lower_bound(annotations.begin(), annotations.end(), window.start);
             const auto end = std::lower_bound(annotations.begin(), annotations.end(), window.end);
             window.annotationRates[i] = static_cast<double>(end - begin) * 2.0;
+        }
+        window.rejection = window.signalRejection;
+        if (!window.referenceRejection.isEmpty())
+        {
+            if (!window.rejection.isEmpty()) { window.rejection += QStringLiteral("; "); }
+            window.rejection += window.referenceRejection;
         }
         windows.push_back(window);
     }
@@ -100,17 +111,25 @@ QJsonObject respiratoryReport(const BIDMCRecord& record)
     const auto windows = analyseRespiration(record);
     QJsonArray rows;
     double absolute = 0.0, squared = 0.0, bias = 0.0, agreement = 0.0;
-    int accepted = 0;
+    int accepted = 0, estimated = 0, validReferences = 0;
+    QJsonObject signalRejections, referenceRejections;
     for (const auto& window : windows)
     {
         const double reference = (window.annotationRates[0] + window.annotationRates[1]) / 2.0;
-        agreement += std::abs(window.annotationRates[0] - window.annotationRates[1]);
+        if (window.referenceValid) { agreement += std::abs(window.annotationRates[0] - window.annotationRates[1]); }
         QJsonObject row{{"start_seconds", window.start}, {"end_seconds", window.end},
             {"ann1_bpm", window.annotationRates[0]}, {"ann2_bpm", window.annotationRates[1]},
-            {"reference_bpm", reference}, {"periodicity", window.periodicity}, {"rejection", window.rejection},
-            {"reference_valid", window.referenceValid}};
+            {"reference_bpm", reference}, {"periodicity", window.periodicity ? QJsonValue(*window.periodicity) : QJsonValue(QJsonValue::Null)}, {"rejection", window.rejection},
+            {"reference_valid", window.referenceValid}, {"signal_rejection", window.signalRejection},
+            {"reference_rejection", window.referenceRejection}};
+        if (!window.signalRejection.isEmpty())
+        { signalRejections[window.signalRejection] = signalRejections.value(window.signalRejection).toInt() + 1; }
+        if (!window.referenceRejection.isEmpty())
+        { referenceRejections[window.referenceRejection] = referenceRejections.value(window.referenceRejection).toInt() + 1; }
+        if (window.referenceValid) { ++validReferences; }
         if (window.estimatedRate)
         {
+            ++estimated;
             row.insert(QStringLiteral("estimate_bpm"), *window.estimatedRate);
             if (window.referenceValid)
             {
@@ -120,15 +139,22 @@ QJsonObject respiratoryReport(const BIDMCRecord& record)
             }
         }
         else { row.insert(QStringLiteral("estimate_bpm"), QJsonValue::Null); }
+        if (!window.referenceValid)
+        { row.insert(QStringLiteral("reference_bpm"), QJsonValue::Null); }
+        if (record.breaths[0].isEmpty()) { row.insert(QStringLiteral("ann1_bpm"), QJsonValue::Null); }
+        if (record.breaths[1].isEmpty()) { row.insert(QStringLiteral("ann2_bpm"), QJsonValue::Null); }
+        if (!row.contains(QStringLiteral("error_bpm"))) { row.insert(QStringLiteral("error_bpm"), QJsonValue::Null); }
+        row.insert(QStringLiteral("scoring_status"), window.estimatedRate && window.referenceValid
+            ? QStringLiteral("scored") : window.referenceValid ? QStringLiteral("no_estimate") : QStringLiteral("reference_excluded"));
         rows.append(row);
     }
     const auto metric = [accepted](double total) -> QJsonValue {
         return accepted > 0 ? QJsonValue(total / accepted) : QJsonValue(QJsonValue::Null);
     };
-    return {{"schema_version", 1}, {"dataset", "BIDMC 1.0.0"}, {"record_id", record.id},
+    return {{"schema_version", 2}, {"dataset", "BIDMC 1.0.0"}, {"record_id", record.id},
         {"source", QString::fromLatin1(kDatasetUrl)}, {"signal_rows", record.waveforms.size()},
         {"numeric_rows", record.numerics.size()}, {"duration_seconds", record.duration()},
-        {"numeric_start_seconds", record.numerics.front().seconds},
+        {"numeric_start_seconds", record.numerics.isEmpty() ? QJsonValue(QJsonValue::Null) : QJsonValue(record.numerics.front().seconds)},
         {"missing_numeric_values", record.missingNumericValues}, {"missing_waveform_values", record.missingWaveformValues},
         {"sha256", QJsonArray::fromStringList(record.sha256)},
         {"annotation_order_inversions", QJsonArray{record.annotationOrderInversions[0], record.annotationOrderInversions[1]}},
@@ -138,9 +164,12 @@ QJsonObject respiratoryReport(const BIDMCRecord& record)
         {"reference", "mean of two independent manual breath counts per [start,end) 30 s window, multiplied by 2"},
         {"timebase", "sample index / 125 Hz; original CSV timestamps validated within their five-significant-digit serialization precision"},
         {"total_windows", windows.size()}, {"accepted_windows", accepted},
+        {"estimated_windows", estimated}, {"reference_valid_windows", validReferences},
+        {"excluded_windows", windows.size() - accepted},
+        {"signal_rejection_counts", signalRejections}, {"reference_rejection_counts", referenceRejections},
         {"coverage", windows.isEmpty() ? 0.0 : static_cast<double>(accepted) / static_cast<double>(windows.size())},
         {"mae_bpm", metric(absolute)}, {"rmse_bpm", accepted > 0 ? QJsonValue(std::sqrt(squared / accepted)) : QJsonValue(QJsonValue::Null)},
-        {"bias_bpm", metric(bias)}, {"annotator_mae_bpm", windows.isEmpty() ? QJsonValue(QJsonValue::Null) : QJsonValue(agreement / static_cast<double>(windows.size()))},
+        {"bias_bpm", metric(bias)}, {"annotator_mae_bpm", validReferences == 0 ? QJsonValue(QJsonValue::Null) : QJsonValue(agreement / validReferences)},
         {"windows", rows}};
 }
 } // namespace saim::medical

@@ -8,7 +8,7 @@ int main(int argc, char** argv)
     QApplication app(argc, argv);
     app.setOrganizationName(QStringLiteral("MedSignal"));
     app.setApplicationName(QStringLiteral("MedSignalWorkbench"));
-    app.setApplicationVersion(QStringLiteral("1.1.0"));
+    app.setApplicationVersion(QStringLiteral("1.2.0"));
     QCommandLineParser parser;
     parser.setApplicationDescription(QStringLiteral("Medical waveform replay and PhysioNet BIDMC respiratory baseline evaluation"));
     parser.addHelpOption(); parser.addVersionOption();

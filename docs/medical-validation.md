@@ -59,3 +59,21 @@ cmake --build --preset demo --target bidmc_benchmark
 当前直接处理阻抗 RESP，未实现 PPG 呼吸率估计、心律失常分类或疾病诊断。PPG 与 ECG 用于原始信号回放；HR、PULSE、RESP、SpO2 使用发布方监护仪数值，不算作自研模型准确率。缺少真实医疗设备接入、实时监护时限、临床风险评估和临床验证。
 
 下一步应优先分析低覆盖和高误差记录，增加信号质量量化、独立数据集外部测试，再考虑模型训练。任何算法改进都需保留本版完整基线结果以便比较。
+
+## 1.2 窗口审阅与复测（2026-10-28）
+
+本轮升级工作流及评测结果的表达，保持估计算法及参数不变。全 53 段的 848 个窗口逐项核对，误差与 1.1 完全一致：730 个窗口产生估计，846 个窗口参考有效，两者交集 728 个可计分；总体 MAE 1.2325 次/分、覆盖率 85.85%。这三个分母分别保存，不将参考无效当作算法没有输出。
+
+- 新的 Window review 页显示估计、双人参考、带符号误差、周期性和排除原因；支持数值排序、Scored / Excluded 筛选。
+- 双击后暂停回放，显示完整 `[start,end)` 30 秒区间，恰好 3,750 个原始样本；避免只看末尾 10 秒或多带入下一个窗口的端点。
+- 文件读取、哈希验证和完整评测在同一个后台任务中完成，再一次性发布文档；重载时立即清除旧游标、表格和导出内容。
+- 缺少整条人工参考流时，不再将零呼吸数当作可计分参考；缺失的参考、误差及未计算的周期性输出 JSON null / CSV 空字段。信号拒绝和参考排除分别记录，即使同时发生也不互相覆盖。
+- JSON schema 2 保留原有指标字段，并增加 `estimated_windows`、`reference_valid_windows`、独立原因计数和每行 `scoring_status`。`accepted_windows` 仍表示估计与有效参考的交集。
+- CLI 新增 `--csv`；JSON 与 CSV 均原子写入单个文件，任一写入失败返回非零。两种输出不是跨文件事务；JSON 已成功、CSV 失败时会保留 JSON 并明确报错。
+- 离线包增加真实第 05 段，可直接复现 2/16 可计分窗口和 14 个周期性不足窗口。
+
+复测证据：[JSON](acceptance/bidmc-20261028.json)、[完整 848 行窗口 CSV](acceptance/bidmc-windows-20261028.csv)、[源码与二进制溯源](acceptance/medical-20261028-run-info.json)、[102 用例回归](acceptance/regression-20261028.xml)。
+
+```powershell
+./build/demo/bin/bidmc_benchmark.exe --data datasets/bidmc --require-records 53 --output build/bidmc-full.json --csv build/bidmc-windows.csv
+```

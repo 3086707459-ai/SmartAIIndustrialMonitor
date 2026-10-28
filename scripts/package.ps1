@@ -50,7 +50,8 @@ try {
         Copy-Item -LiteralPath (Join-Path $projectRoot 'docs/package-readme.md') -Destination (Join-Path $destination 'README.md')
         New-Item -ItemType Directory -Path (Join-Path $destination 'docs/acceptance') -Force | Out-Null
         Copy-Item -LiteralPath (Join-Path $projectRoot 'docs/medical-validation.md') -Destination (Join-Path $destination 'docs')
-        foreach ($evidenceName in @('bidmc-20261026.json', 'medical-20261026-run-info.json', 'regression-20261026.xml')) {
+        foreach ($evidenceName in @('bidmc-20261026.json', 'medical-20261026-run-info.json', 'regression-20261026.xml',
+            'bidmc-20261028.json', 'bidmc-windows-20261028.csv', 'medical-20261028-run-info.json', 'regression-20261028.xml')) {
             Copy-Item -LiteralPath (Join-Path $projectRoot "docs/acceptance/$evidenceName") -Destination (Join-Path $destination 'docs/acceptance')
         }
         New-Item -ItemType Directory -Path (Join-Path $destination 'acceptance') | Out-Null
@@ -60,7 +61,7 @@ try {
             schemaVersion = 1
             product = 'MedSignalWorkbench'
             buildType = 'Release'
-            profile = 'medical replay: original BIDMC record 01 + fixed RESP baseline; no clinical model'
+            profile = 'medical review 1.2: original BIDMC records 01 and 05; fixed RESP baseline; JSON/CSV export; no clinical model'
             qtVersion = (& (Join-Path $qtDirectory 'bin/qmake.exe') -query QT_VERSION)
             builtAtUtc = [DateTime]::UtcNow.ToString('o')
         } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $destination 'package-info.json') -Encoding utf8

@@ -72,7 +72,7 @@ function Invoke-IsolatedProcess([string]$Name, [string]$Arguments, [string]$LogN
 Invoke-IsolatedProcess 'MedSignalWorkbench.exe' '--version' 'application'
 Invoke-IsolatedProcess 'saim_deployment_probe.exe' ('--evidence-dir "' + $evidence + '"') 'probe'
 $result = Get-Content -LiteralPath (Join-Path $evidence 'probe-result.json') -Raw | ConvertFrom-Json
-if (-not $result.ok -or $result.platform -ne 'windows' -or -not $result.guiVisible -or -not $result.svgRendered -or -not $result.missingValuePreserved -or $result.chartPoints -ne 3753 -or $result.waveformRows -ne 60001 -or $result.numericRows -ne 481) {
+if (-not $result.ok -or $result.platform -ne 'windows' -or -not $result.guiVisible -or -not $result.svgRendered -or -not $result.missingValuePreserved -or $result.chartPoints -ne 3753 -or $result.waveformRows -ne 60001 -or $result.numericRows -ne 481 -or $result.reviewRows -ne 16 -or -not $result.reviewNavigationPassed -or -not $result.csvExportPassed -or $result.difficultAcceptedWindows -ne 2) {
     throw "Deployment probe did not meet acceptance conditions: $evidence"
 }
 $runtimePrefix = $runRoot.TrimEnd('\') + '\'
@@ -101,6 +101,10 @@ $acceptance = @{
     numericRows = $result.numericRows
     missingValuePreserved = $result.missingValuePreserved
     chartPoints = $result.chartPoints
+    reviewRows = $result.reviewRows
+    reviewNavigationPassed = $result.reviewNavigationPassed
+    csvExportPassed = $result.csvExportPassed
+    difficultAcceptedWindows = $result.difficultAcceptedWindows
     runtimeModules = $runtimeModules
     path = "$env:SystemRoot\System32;$env:SystemRoot;$env:SystemRoot\System32\Wbem"
 }

@@ -1,7 +1,8 @@
-#include "medical/RespiratoryAnalysis.h"
+#include "medical/MedicalDocument.h"
 #include <QCoreApplication>
 #include <QCommandLineParser>
 #include <QFile>
+#include <QFileInfo>
 #include <QCryptographicHash>
 #include <QDateTime>
 #include <QDir>
@@ -23,11 +24,15 @@ int main(int argc, char** argv)
     parser.addOption({"output", "Write machine-readable JSON evidence", "path"});
     parser.addOption({"require-records", "Fail unless exactly this many complete records are available", "count", "53"});
     parser.addOption({"manifest", "Publisher SHA256SUMS.txt snapshot", "path"});
+    parser.addOption({"csv", "Also export every window to a flat UTF-8 CSV file", "path"});
     parser.process(app);
     bool countOk = false;
     const int required = parser.value("require-records").toInt(&countOk);
     if (!parser.isSet("data") || !parser.isSet("output") || !countOk || required < 1 || required > 53)
     { QTextStream(stderr) << "--data, --output and a valid --require-records (1..53) are required\n"; return 2; }
+    if (parser.isSet("csv") && QFileInfo(parser.value("csv")).absoluteFilePath().compare(
+        QFileInfo(parser.value("output")).absoluteFilePath(), Qt::CaseInsensitive) == 0)
+    { QTextStream(stderr) << "JSON and CSV destinations must differ\n"; return 2; }
     const auto ids = saim::medical::availableBIDMCRecords(parser.value("data"));
     if (ids.size() != required)
     { QTextStream(stderr) << "Incomplete benchmark corpus: expected " << required << ", found " << ids.size() << '\n'; return 3; }
@@ -48,7 +53,7 @@ int main(int argc, char** argv)
         if (fields.size() == 2) { publisherHashes.insert(fields[1], fields[0]); }
     }
     QJsonArray records;
-    int total = 0, accepted = 0;
+    int total = 0, accepted = 0, estimated = 0, references = 0;
     double sumAbsolute = 0.0, sumSquared = 0.0, sumBias = 0.0;
     double recordMae = 0.0;
     int recordsWithEstimates = 0;
@@ -68,6 +73,8 @@ int main(int argc, char** argv)
         { QTextStream(stderr) << id << ": unexpected source row counts\n"; return 5; }
         total += report.value("total_windows").toInt();
         accepted += report.value("accepted_windows").toInt();
+        estimated += report.value("estimated_windows").toInt();
+        references += report.value("reference_valid_windows").toInt();
         for (const auto& item : report.value("windows").toArray())
         {
             const auto row = item.toObject();
@@ -82,7 +89,7 @@ int main(int argc, char** argv)
         records.append(report);
     }
     const auto ratio = [](double sum, int count) -> QJsonValue { return count > 0 ? QJsonValue(sum / count) : QJsonValue(QJsonValue::Null); };
-    QJsonObject output{{"schema_version", 1}, {"dataset", "BIDMC 1.0.0"},
+    QJsonObject output{{"schema_version", 2}, {"dataset", "BIDMC 1.0.0"},
         {"evaluated_at_utc", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs)},
         {"qt_version", QString::fromLatin1(qVersion())},
         {"publisher_hashes_verified", true},
@@ -91,15 +98,19 @@ int main(int argc, char** argv)
         {"method", "fixed RESP autocorrelation baseline v1; no fitted model or training split"},
         {"scope", "Retrospective baseline evaluation, not clinical validation; evaluates impedance RESP, not PPG-derived respiration"},
         {"record_count", ids.size()}, {"total_windows", total}, {"accepted_windows", accepted},
+        {"estimated_windows", estimated}, {"reference_valid_windows", references}, {"excluded_windows", total - accepted},
         {"coverage", total > 0 ? static_cast<double>(accepted) / total : 0.0},
         {"micro_mae_bpm", ratio(sumAbsolute, accepted)},
         {"micro_rmse_bpm", accepted > 0 ? QJsonValue(std::sqrt(sumSquared / accepted)) : QJsonValue(QJsonValue::Null)},
         {"micro_bias_bpm", ratio(sumBias, accepted)}, {"macro_mae_bpm", ratio(recordMae, recordsWithEstimates)},
         {"records", records}};
-    QSaveFile file(parser.value("output"));
-    const auto outputBytes = QJsonDocument(output).toJson();
-    if (!file.open(QIODevice::WriteOnly) || file.write(outputBytes) != outputBytes.size() || !file.commit())
-    { QTextStream(stderr) << "Cannot save benchmark JSON\n"; return 6; }
+    const auto saved = saim::medical::saveEvaluationReport(output, parser.value("output"), saim::medical::EvaluationFormat::Json);
+    if (saved.isError()) { QTextStream(stderr) << saved.error().message << '\n'; return 6; }
+    if (parser.isSet("csv"))
+    {
+        const auto csv = saim::medical::saveEvaluationReport(output, parser.value("csv"), saim::medical::EvaluationFormat::Csv);
+        if (csv.isError()) { QTextStream(stderr) << csv.error().message << '\n'; return 6; }
+    }
     QTextStream(stdout) << "Evaluated " << ids.size() << " records; coverage " << output.value("coverage").toDouble()
                         << ", micro MAE " << output.value("micro_mae_bpm").toDouble() << " breaths/min\n";
     return accepted > 0 ? 0 : 7;

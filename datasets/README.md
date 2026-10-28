@@ -6,7 +6,7 @@
 
 ## 目录与完整性
 
-- `bidmc-demo/`：原样保留的第 01 段 Signals、Numerics、Breaths CSV，以及发布方原始 LICENSE。用于离线运行、常规回归和分发验收。未截断、插值或修改幅度。
+- `bidmc-demo/`：原样保留的第 01、05 段 Signals、Numerics、Breaths CSV，以及发布方原始 LICENSE。01 用于常规回放，05 用于展示低覆盖、拒绝估计的真实难例。两段均未截断、插值或修改幅度。
 - `bidmc/`：下载工具生成的完整本地数据目录，已加入 `.gitignore`，不将约 153 MB 的完整 CSV 重复提交至 Git。
 - `SHA256SUMS-bidmc-1.0.0.txt`：从发布方版本目录获取的完整 SHA-256 清单。下载器和评测程序均核对输入文件哈希。
 

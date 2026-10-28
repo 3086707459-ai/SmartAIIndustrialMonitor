@@ -15,3 +15,4 @@
 datasets/bidmc-demo/*.csv -text
 datasets/bidmc-demo/LICENSE -text
 datasets/SHA256SUMS-bidmc-1.0.0.txt -text
+docs/acceptance/*.csv text eol=lf

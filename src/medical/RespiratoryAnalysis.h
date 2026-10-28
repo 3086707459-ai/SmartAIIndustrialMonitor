@@ -10,8 +10,10 @@ struct RespiratoryWindow
     double end = 0.0;
     std::optional<double> estimatedRate;
     std::array<double, 2> annotationRates{};
-    double periodicity = 0.0;
+    std::optional<double> periodicity;
     QString rejection;
+    QString signalRejection;
+    QString referenceRejection;
     bool referenceValid = true;
 };
 

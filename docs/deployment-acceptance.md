@@ -1,6 +1,6 @@
 # 医疗版 Windows 部署验收
 
-当前分发入口为 `MedSignalWorkbench.exe`。包包含原生 Qt 界面、BIDMC 01 原始三类 CSV、署名及原始许可、发布方哈希清单、`bidmc_benchmark.exe`、部署探针、Qt / MinGW 运行库和验收脚本。
+当前分发入口为 `MedSignalWorkbench.exe`。1.2 包包含原生 Qt 界面、BIDMC 01 与 05 原始三类 CSV、署名及原始许可、发布方哈希清单、`bidmc_benchmark.exe`、部署探针、Qt / MinGW 运行库和验收脚本。
 
 ```powershell
 ./scripts/package.ps1 -QtRoot E:/qt/6.8.3/mingw_64 -CompilerBin E:/qt/Tools/mingw1310_64/bin -OutputDirectory build/packages/medical-demo
@@ -16,8 +16,10 @@
 - 定位 111 秒时缺失 SpO2 显示 `—`；定位 30 秒时三通道共 3,753 个原始点被绘制。
 - 呼吸基线输出 16 个窗口，JSON 可写入包外证据目录。
 - 原生窗口可见、SVG 像素验证通过、Qt / 编译器 DLL 来自临时运行包；Qt Core、Charts、Svg 与 qwindows 必须有加载证据。当前使用的 QtConcurrent 模板由 QtCore 线程池支撑，不要求单独加载 Qt6Concurrent.dll。
+- 窗口审阅表包含 16 行，导航至完整 30 秒区间时每通道绘制 3,750 个点；CSV 导出可读。
+- 原样第 05 段能够离线加载，16 个窗口中保留 2 个可计分窗口和 14 个拒绝估计窗口。
 
-证据包括 `acceptance-result.json`、`probe-result.json`、`bidmc-demo-evaluation.json`、`native-window.png` 及进程日志。医疗版当前结果详见 [验收摘要](acceptance/medical-package-20261026.json)。
+证据包括 `acceptance-result.json`、`probe-result.json`、`bidmc-demo-evaluation.json` / `.csv`、`native-window.png`、`native-review.png` 及进程日志。医疗版 1.2 结果详见 [验收摘要](acceptance/medical-package-20261028.json)；[1.1 历史结果](acceptance/medical-package-20261026.json) 单独保留。
 
 ## 干净 Windows 的额外步骤
 

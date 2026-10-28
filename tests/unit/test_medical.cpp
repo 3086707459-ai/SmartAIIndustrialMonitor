@@ -1,9 +1,11 @@
 #include "TestHarness.h"
 #include "medical/RespiratoryAnalysis.h"
+#include "medical/MedicalDocument.h"
 #include <QCoreApplication>
 #include <QDir>
 #include <QFile>
 #include <QJsonArray>
+#include <QJsonDocument>
 #include <QTemporaryDir>
 
 using namespace saim::medical;
@@ -128,7 +130,8 @@ SAIM_TEST(import_requires_all_three_files_and_safe_record_identifier)
     SAIM_CHECK(loadBIDMCRecord(scratch.path(), QStringLiteral("01")).isError());
     SAIM_CHECK(loadBIDMCRecord(source(), QStringLiteral("../01")).isError());
     SAIM_CHECK(loadBIDMCRecord(source(), QStringLiteral("54")).isError());
-    SAIM_CHECK(availableBIDMCRecords(source()) == QStringList{QStringLiteral("01")});
+    const QStringList expected{QStringLiteral("01"), QStringLiteral("05")};
+    SAIM_CHECK(availableBIDMCRecords(source()) == expected);
 }
 
 SAIM_TEST(import_rejects_modified_but_well_formed_source_by_publisher_hash)
@@ -138,6 +141,95 @@ SAIM_TEST(import_rejects_modified_but_well_formed_source_by_publisher_hash)
     const auto loaded = loadBIDMCRecord(scratch.path(), QStringLiteral("01"));
     SAIM_CHECK(loaded.isError());
     SAIM_CHECK(loaded.error().message.contains(QStringLiteral("Publisher SHA-256 mismatch")));
+}
+
+SAIM_TEST(missing_reference_annotations_do_not_produce_scored_zero_rate_references)
+{
+    auto record = realRecord();
+    record.breaths = {};
+    const auto report = respiratoryReport(record);
+    SAIM_CHECK(report.value("accepted_windows").toInt() == 0);
+    SAIM_CHECK(report.value("mae_bpm").isNull());
+    for (const auto& item : report.value("windows").toArray())
+    {
+        SAIM_CHECK(!item.toObject().value("reference_valid").toBool());
+        SAIM_CHECK(!item.toObject().value("error_bpm").isDouble());
+    }
+}
+
+SAIM_TEST(empty_record_report_is_safe_and_has_no_available_metrics)
+{
+    const auto report = respiratoryReport({});
+    SAIM_CHECK(report.value("total_windows").toInt() == 0);
+    SAIM_CHECK(report.value("mae_bpm").isNull());
+    SAIM_CHECK(report.value("numeric_start_seconds").isNull());
+    SAIM_CHECK(report.value("annotator_mae_bpm").isNull());
+}
+
+SAIM_TEST(signal_and_reference_exclusions_are_preserved_independently)
+{
+    auto record = realRecord();
+    for (qsizetype i = 0; i < 3750; ++i) { record.waveforms[i].values[2] = 0.25; }
+    record.ambiguousAnnotationTimes.push_back(1.0);
+    const auto report = respiratoryReport(record);
+    const auto row = report.value("windows").toArray()[0].toObject();
+    SAIM_CHECK(row.value("signal_rejection").toString() == QStringLiteral("flat RESP waveform"));
+    SAIM_CHECK(!row.value("reference_rejection").toString().isEmpty());
+    SAIM_CHECK(row.value("estimate_bpm").isNull());
+    SAIM_CHECK(row.value("reference_bpm").isNull());
+    SAIM_CHECK(row.value("error_bpm").isNull());
+    SAIM_CHECK(row.value("periodicity").isNull());
+    SAIM_CHECK(report.value("estimated_windows").toInt() == 15);
+    SAIM_CHECK(report.value("reference_valid_windows").toInt() == 15);
+    SAIM_CHECK(report.value("accepted_windows").toInt() == 15);
+    SAIM_CHECK(report.value("signal_rejection_counts").toObject().value("flat RESP waveform").toInt() == 1);
+    SAIM_CHECK(report.value("reference_rejection_counts").toObject().size() == 1);
+}
+
+SAIM_TEST(real_difficult_record_preserves_all_rejected_windows_in_csv)
+{
+    const auto loaded = loadMedicalDocument(source(), QStringLiteral("05"));
+    SAIM_CHECK(loaded.isOk());
+    const auto& report = loaded.value().report;
+    SAIM_CHECK(report.value("total_windows").toInt() == 16);
+    SAIM_CHECK(report.value("accepted_windows").toInt() == 2);
+    const auto csv = evaluationCsv(report);
+    const auto lines = csv.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
+    SAIM_CHECK(lines.size() == 17);
+    int excluded = 0;
+    for (qsizetype row = 1; row < lines.size(); ++row)
+    {
+        const auto fields = lines[row].split(QLatin1Char(','));
+        SAIM_CHECK(fields.size() == 12);
+        SAIM_CHECK(fields[0] == QStringLiteral("\"05\""));
+        if (fields[9] == QStringLiteral("\"no_estimate\""))
+        {
+            ++excluded;
+            SAIM_CHECK(fields[3].isEmpty());
+            SAIM_CHECK(fields[7].isEmpty());
+            SAIM_CHECK(fields[10].contains(QStringLiteral("insufficient periodicity")));
+        }
+    }
+    SAIM_CHECK(excluded == 14);
+}
+
+SAIM_TEST(evaluation_exports_round_trip_and_surface_write_failures)
+{
+    const auto loaded = loadMedicalDocument(source(), QStringLiteral("01"));
+    SAIM_CHECK(loaded.isOk());
+    const auto& report = loaded.value().report;
+    QTemporaryDir scratch; SAIM_CHECK(scratch.isValid());
+    const QString jsonPath = QDir(scratch.path()).filePath(QStringLiteral("report.json"));
+    const QString csvPath = QDir(scratch.path()).filePath(QStringLiteral("report.csv"));
+    SAIM_CHECK(saveEvaluationReport(report, jsonPath, EvaluationFormat::Json).isOk());
+    SAIM_CHECK(saveEvaluationReport(report, csvPath, EvaluationFormat::Csv).isOk());
+    QFile jsonFile(jsonPath); SAIM_CHECK(jsonFile.open(QIODevice::ReadOnly));
+    SAIM_CHECK(QJsonDocument::fromJson(jsonFile.readAll()).object() == report);
+    QFile csvFile(csvPath); SAIM_CHECK(csvFile.open(QIODevice::ReadOnly));
+    SAIM_CHECK(csvFile.readAll() == evaluationCsv(report).toUtf8());
+    SAIM_CHECK(saveEvaluationReport(report, scratch.path(), EvaluationFormat::Csv).isError());
+    SAIM_CHECK(saveEvaluationReport({}, csvPath, EvaluationFormat::Json).isError());
+    SAIM_CHECK(evaluationCsv(QJsonObject{{"records", QJsonArray{report, report}}}).split(QLatin1Char('\n'), Qt::SkipEmptyParts).size() == 33);
 }
 
 int main(int argc, char** argv)
